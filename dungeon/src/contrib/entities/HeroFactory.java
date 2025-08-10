@@ -16,12 +16,8 @@ import core.Entity;
 import core.Game;
 import core.components.*;
 import core.level.Tile;
-import core.level.loader.DungeonLoader;
-import core.level.utils.LevelUtils;
-import core.network.messages.client2server.HeroMoveCommand;
-import core.network.messages.client2server.HeroTargetMoveCommand;
-import core.network.messages.client2server.InteractCommand;
-import core.network.messages.client2server.UseSkillCommand;
+import core.network.messages.InputMessage;
+import core.network.messages.InputMessage.Action;
 import core.utils.Direction;
 import core.utils.Point;
 import core.utils.Tuple;
@@ -38,18 +34,12 @@ import java.util.function.Consumer;
 /** A utility class for building the hero entity in the game world. */
 public final class HeroFactory {
 
-  /** If true, the hero can be moved with the mouse. */
-  public static final boolean ENABLE_MOUSE_MOVEMENT = true;
-
   /**
    * The default size of the inventory.
    *
    * @see InventoryComponent
    */
   public static final int DEFAULT_INVENTORY_SIZE = 6;
-
-  /** The ID for the movement force. */
-  public static final String MOVEMENT_ID = "Movement";
 
   private static final IPath HERO_FILE_PATH = new SimpleIPath("character/wizard");
   private static final Vector2 STEP_SPEED = Vector2.of(5, 5);
@@ -126,11 +116,11 @@ public final class HeroFactory {
    * @throws IOException if the animation could not been loaded.
    */
   public static Entity newHero() throws IOException {
-    return newHero(HERO_DEATH, true);
+    return newHero(HERO_DEATH, true, "Player");
   }
 
-  public static Entity newHero(boolean isLocal) throws IOException {
-    return newHero(HERO_DEATH, isLocal);
+  public static Entity newHero(boolean isLocal, String playerName) throws IOException {
+    return newHero(HERO_DEATH, isLocal, playerName);
   }
 
   /**
@@ -150,10 +140,10 @@ public final class HeroFactory {
    * @return A new Entity.
    * @throws IOException if the animation could not been loaded.
    */
-  public static Entity newHero(Consumer<Entity> deathCallback, boolean isLocal) throws IOException {
+  public static Entity newHero(Consumer<Entity> deathCallback, boolean isLocal, String playerName) throws IOException {
     Entity hero = new Entity("hero");
     hero.persistent(true);
-    PlayerComponent pc = new PlayerComponent(isLocal);
+    PlayerComponent pc = new PlayerComponent(isLocal, playerName);
     hero.add(pc);
     CameraComponent cc = new CameraComponent();
     if (isLocal) {
@@ -162,11 +152,18 @@ public final class HeroFactory {
     PositionComponent poc = new PositionComponent();
     hero.add(poc);
     hero.add(new VelocityComponent(HERO_MAX_SPEED, HERO_MASS, (e) -> {}, true));
-    hero.add(new DrawComponent(HERO_FILE_PATH));
+    DrawComponent dc = new DrawComponent(HERO_FILE_PATH);
+    dc.tintColor(isLocal ? -1 : 0x000077); // tint remote heroes blue
+    hero.add(dc);
     HealthComponent hc =
         new HealthComponent(
             HERO_HP,
             entity -> {
+              if (!entity
+                  .fetch(PlayerComponent.class)
+                  .map(PlayerComponent::isLocalHero)
+                  .orElse(false)) return;
+
               // play sound
               Sound sound = Gdx.audio.newSound(Gdx.files.internal("sounds/death.wav"));
               long soundId = sound.play();
@@ -227,7 +224,7 @@ public final class HeroFactory {
     registerMovement(
         inputComp, core.configuration.KeyboardConfig.MOVEMENT_LEFT.value(), Direction.LEFT);
 
-    if (ENABLE_MOUSE_MOVEMENT) {
+    if (HeroController.ENABLE_MOUSE_MOVEMENT) {
       // Mouse Left Click
       registerMouseLeftClick(inputComp);
 
@@ -238,7 +235,7 @@ public final class HeroFactory {
             // Small adjustment to get the correct tile
             Point mousePos =
                 SkillTools.cursorPositionAsPoint().translate(Vector2.of(-0.5f, -0.25f));
-            Game.network().sendToServer(new HeroTargetMoveCommand(mousePos));
+            Game.network().sendInput(new InputMessage(Action.MOVE_PATH, mousePos));
           },
           false);
     }
@@ -252,7 +249,7 @@ public final class HeroFactory {
         false,
         true);
 
-    if (ENABLE_MOUSE_MOVEMENT) {
+    if (HeroController.ENABLE_MOUSE_MOVEMENT) {
       inputComp.registerCallback(
           KeyboardConfig.MOUSE_INVENTORY_TOGGLE.value(),
           (entity) -> {
@@ -349,7 +346,12 @@ public final class HeroFactory {
   }
 
   private static void registerMovement(InputComponent ic, int key, Direction direction) {
-    ic.registerCallback(key, entity -> Game.network().sendToServer(new HeroMoveCommand(direction)));
+    ic.registerCallback(
+        key,
+        entity -> {
+          Game.network()
+              .sendInput(new InputMessage(Action.MOVE, new Point(0, 0).translate(direction)));
+        });
   }
 
   private static void registerMouseLeftClick(InputComponent ic) {
@@ -383,7 +385,8 @@ public final class HeroFactory {
 
   private static void executeHeroSkill(Entity hero) {
     // TODO: Implement logic to control skill_ids
-    Game.network().sendToServer(new UseSkillCommand(0, SkillTools.cursorPositionAsPoint()));
+    Game.network()
+        .sendInput(new InputMessage(Action.CAST_SKILL, SkillTools.cursorPositionAsPoint()));
   }
 
   private static void handleInteractWithClosestInteractable(Entity hero) {
@@ -410,7 +413,7 @@ public final class HeroFactory {
         hero.fetch(PositionComponent.class)
             .orElseThrow(() -> MissingComponentException.build(hero, PositionComponent.class));
     if (Point.calculateDistance(pc.position(), heroPC.position()) < ic.radius()) {
-      Game.network().sendToServer(new InteractCommand(interactable));
+      Game.network().sendInput(new InputMessage(Action.INTERACT, pc.position()));
     }
   }
 
