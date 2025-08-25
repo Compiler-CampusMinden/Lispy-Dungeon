@@ -6,7 +6,6 @@ import contrib.entities.LeverFactory;
 import contrib.entities.MiscFactory;
 import contrib.entities.MonsterFactory;
 import contrib.hud.DialogUtils;
-import contrib.hud.dialogs.OkDialog;
 import contrib.hud.dialogs.YesNoDialog;
 import contrib.item.concreteItem.ItemPotionHealth;
 import contrib.item.concreteItem.ItemPotionWater;
@@ -32,10 +31,7 @@ import hint.Hint;
 import hint.HintComponent;
 import hint.HintSystem;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import petriNet.PetriNetSystem;
 import petriNet.PlaceComponent;
@@ -109,13 +105,12 @@ public class Level01 extends DungeonLevel {
                         inputComponent ->
                             inputComponent.registerCallback(
                                 Input.Keys.T,
-                                entity ->
-                                    hintSystem
-                                        .nextHint()
-                                        .ifPresent(
-                                            hint ->
-                                                OkDialog.showOkDialog(
-                                                    hint.text(), hint.titel(), () -> {})),
+                                entity -> {
+                                  System.out.println("Gib was ein");
+                                  Scanner in = new Scanner(System.in);
+                                  String x = in.nextLine();
+                                  System.out.println(x);
+                                },
                                 false,
                                 true)));
 
