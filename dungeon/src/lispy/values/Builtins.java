@@ -1,10 +1,11 @@
 package lispy.values;
 
 import contrib.components.BlockComponent;
-import contrib.components.CollideComponent;
+import contrib.components.PathComponent;
 import contrib.utils.EntityUtils;
 import contrib.utils.components.skill.FireballSkill;
 import contrib.utils.components.skill.Skill;
+import contrib.utils.components.skill.SkillTools;
 import core.Entity;
 import core.Game;
 import core.components.PositionComponent;
@@ -20,6 +21,7 @@ import core.utils.components.MissingComponentException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -174,21 +176,7 @@ public class Builtins {
           "shootFireball",
           args -> {
             Entity hero = Game.hero().orElseThrow(MissingHeroException::new);
-            new Skill(
-                    new FireballSkill(
-                        () ->
-                            hero.fetch(CollideComponent.class)
-                                .map(cc -> cc.center(hero))
-                                .map(p -> p.translate(EntityUtils.getViewDirection(hero)))
-                                .orElseThrow(
-                                    () ->
-                                        MissingComponentException.build(
-                                            hero, CollideComponent.class)),
-                        Integer.MAX_VALUE,
-                        15f,
-                        1),
-                    1)
-                .execute(hero);
+            new Skill(new FireballSkill(SkillTools::cursorPositionAsPoint), 500).execute(hero);
 
             return new BoolVal(true);
           },
@@ -196,14 +184,22 @@ public class Builtins {
           args -> {
             Entity hero = Game.hero().orElseThrow(MissingHeroException::new);
             Direction viewDirection = EntityUtils.getViewDirection(hero);
-            move(viewDirection, hero);
-            //            Game.levelEntities()
-            //                .filter(entity -> entity.name().equals("Blockly Black Knight"))
-            //                .findFirst()
-            //                .ifPresent(
-            //                    boss ->
-            //                        boss.fetch(PositionComponent.class)
-            //                            .ifPresent(pc -> move(pc.viewDirection(), boss)));
+              VelocityComponent vc =
+                hero
+                  .fetch(VelocityComponent.class)
+                  .orElseThrow(
+                    () -> MissingComponentException.build(hero, VelocityComponent.class));
+
+              Optional<Vector2> existingForceOpt = vc.force("Movement");
+              Vector2 newForce = Vector2.of(5, 5).scale(viewDirection);
+
+              Vector2 updatedForce =
+                existingForceOpt.map(existing -> existing.add(newForce)).orElse(newForce);
+
+              if (updatedForce.lengthSquared() > 0) {
+                updatedForce = updatedForce.normalize().scale(Vector2.of(5, 5).length());
+              }
+            vc.applyForce("Movement", updatedForce);
 
             return new BoolVal(true);
           },
@@ -248,68 +244,4 @@ public class Builtins {
             return new BoolVal(true);
           });
 
-  private static void move(final Direction direction, final Entity... entities) {
-    double distanceThreshold = 0.1;
-
-    record EntityComponents(
-        PositionComponent pc, VelocityComponent vc, Coordinate targetPosition) {}
-
-    List<EntityComponents> entityComponents = new ArrayList<>();
-
-    for (Entity entity : entities) {
-      PositionComponent pc =
-          entity
-              .fetch(PositionComponent.class)
-              .orElseThrow(() -> MissingComponentException.build(entity, PositionComponent.class));
-
-      VelocityComponent vc =
-          entity
-              .fetch(VelocityComponent.class)
-              .orElseThrow(() -> MissingComponentException.build(entity, VelocityComponent.class));
-
-      Tile targetTile = Game.tileAt(pc.position(), direction).orElse(null);
-      if (targetTile == null
-          || (!targetTile.isAccessible() && !(targetTile instanceof PitTile))
-          || Game.entityAtTile(targetTile).anyMatch(e -> e.isPresent(BlockComponent.class))) {
-        return; // if any target tile is not accessible, don't move anyone
-      }
-
-      entityComponents.add(new EntityComponents(pc, vc, targetTile.coordinate()));
-    }
-
-    double[] distances =
-        entityComponents.stream()
-            .mapToDouble(e -> e.pc.position().distance(e.targetPosition.toCenteredPoint()))
-            .toArray();
-    double[] lastDistances = new double[entities.length];
-
-    while (true) {
-      boolean allEntitiesArrived = true;
-      for (int i = 0; i < entities.length; i++) {
-        EntityComponents comp = entityComponents.get(i);
-        comp.vc.clearForces();
-        comp.vc.currentVelocity(Vector2.ZERO);
-        comp.vc.applyForce("Movement", direction.scale(7.5));
-
-        lastDistances[i] = distances[i];
-        distances[i] = comp.pc.position().distance(comp.targetPosition.toCenteredPoint());
-
-        if (comp.vc().maxSpeed() > 0
-            && Game.existInLevel(entities[i])
-            && !(distances[i] <= distanceThreshold || distances[i] > lastDistances[i])) {
-          allEntitiesArrived = false;
-        }
-      }
-
-      if (allEntitiesArrived) break;
-    }
-
-    for (EntityComponents ec : entityComponents) {
-      ec.vc.currentVelocity(Vector2.ZERO);
-      ec.vc.clearForces();
-      // check the position-tile via new request in case a new level was loaded
-      Tile endTile = Game.tileAt(ec.pc.position()).orElse(null);
-      if (endTile != null) ec.pc.position(endTile); // snap to grid
-    }
-  }
 }
