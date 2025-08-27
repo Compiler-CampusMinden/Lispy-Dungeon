@@ -197,13 +197,13 @@ public class Builtins {
             Entity hero = Game.hero().orElseThrow(MissingHeroException::new);
             Direction viewDirection = EntityUtils.getViewDirection(hero);
             move(viewDirection, hero);
-//            Game.levelEntities()
-//                .filter(entity -> entity.name().equals("Blockly Black Knight"))
-//                .findFirst()
-//                .ifPresent(
-//                    boss ->
-//                        boss.fetch(PositionComponent.class)
-//                            .ifPresent(pc -> move(pc.viewDirection(), boss)));
+            //            Game.levelEntities()
+            //                .filter(entity -> entity.name().equals("Blockly Black Knight"))
+            //                .findFirst()
+            //                .ifPresent(
+            //                    boss ->
+            //                        boss.fetch(PositionComponent.class)
+            //                            .ifPresent(pc -> move(pc.viewDirection(), boss)));
 
             return new BoolVal(true);
           },
