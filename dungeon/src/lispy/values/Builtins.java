@@ -1,27 +1,16 @@
 package lispy.values;
 
-import contrib.components.BlockComponent;
-import contrib.components.PathComponent;
 import contrib.utils.EntityUtils;
 import contrib.utils.components.skill.FireballSkill;
 import contrib.utils.components.skill.Skill;
 import contrib.utils.components.skill.SkillTools;
-import core.Entity;
 import core.Game;
-import core.components.PositionComponent;
 import core.components.VelocityComponent;
-import core.level.Tile;
-import core.level.elements.tile.PitTile;
-import core.level.utils.Coordinate;
 import core.utils.Direction;
-import core.utils.MissingHeroException;
-import core.utils.Point;
 import core.utils.Vector2;
-import core.utils.components.MissingComponentException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -173,75 +162,62 @@ public class Builtins {
    */
   public static Map<String, Function<List<Value>, Value>> dungeonsupport =
       Map.of(
-          "shootFireball",
+          "shoot",
           args -> {
-            Entity hero = Game.hero().orElseThrow(MissingHeroException::new);
-            new Skill(new FireballSkill(SkillTools::cursorPositionAsPoint), 500).execute(hero);
+            new Skill(new FireballSkill(SkillTools::cursorPositionAsPoint), 500)
+                .execute(Game.hero().orElseThrow());
 
             return new BoolVal(true);
           },
           "move",
           args -> {
-            Entity hero = Game.hero().orElseThrow(MissingHeroException::new);
-            Direction viewDirection = EntityUtils.getViewDirection(hero);
-              VelocityComponent vc =
-                hero
-                  .fetch(VelocityComponent.class)
-                  .orElseThrow(
-                    () -> MissingComponentException.build(hero, VelocityComponent.class));
+            if (args.isEmpty()) throw new RuntimeException("move: expected at least one argument");
+            int steps = Value.asNum(args.getFirst());
 
-              Optional<Vector2> existingForceOpt = vc.force("Movement");
-              Vector2 newForce = Vector2.of(5, 5).scale(viewDirection);
+            Vector2 newForce =
+                Vector2.of(10 * steps, 10 * steps).scale(EntityUtils.getHeroViewDirection());
 
-              Vector2 updatedForce =
-                existingForceOpt.map(existing -> existing.add(newForce)).orElse(newForce);
-
-              if (updatedForce.lengthSquared() > 0) {
-                updatedForce = updatedForce.normalize().scale(Vector2.of(5, 5).length());
-              }
-            vc.applyForce("Movement", updatedForce);
-
-            return new BoolVal(true);
-          },
-          "turnleft",
-          args -> {
-            Entity entity = Game.hero().orElseThrow(MissingHeroException::new);
-            PositionComponent pc =
-                entity
-                    .fetch(PositionComponent.class)
-                    .orElseThrow(
-                        () -> MissingComponentException.build(entity, PositionComponent.class));
-            VelocityComponent vc =
-                entity
-                    .fetch(VelocityComponent.class)
-                    .orElseThrow(
-                        () -> MissingComponentException.build(entity, VelocityComponent.class));
-            Point oldP = pc.position();
-            vc.applyForce("Movement", Direction.LEFT);
-            // so the player can not glitch inside the next tile
-            pc.position(oldP);
+            Game.hero()
+                .flatMap(h -> h.fetch(VelocityComponent.class))
+                .map(
+                    vc -> {
+                      vc.applyForce(
+                          "Movement",
+                          vc.force("Movement")
+                              .map(existing -> existing.add(newForce))
+                              .orElse(newForce));
+                      return vc;
+                    });
 
             return new BoolVal(true);
           },
-          "turnright",
+          "turn",
           args -> {
-            Entity entity = Game.hero().orElseThrow(MissingHeroException::new);
-            PositionComponent pc =
-                entity
-                    .fetch(PositionComponent.class)
-                    .orElseThrow(
-                        () -> MissingComponentException.build(entity, PositionComponent.class));
-            VelocityComponent vc =
-                entity
-                    .fetch(VelocityComponent.class)
-                    .orElseThrow(
-                        () -> MissingComponentException.build(entity, VelocityComponent.class));
-            Point oldP = pc.position();
-            vc.applyForce("Movement", Direction.RIGHT);
-            // so the player can not glitch inside the next tile
-            pc.position(oldP);
+            if (args.isEmpty()) throw new RuntimeException("turn: expected at least one argument");
+
+            Direction dir =
+                switch (args.getFirst()) {
+                  case StrVal s ->
+                      switch (s.value()) {
+                        case "left" -> Direction.LEFT;
+                        case "right" -> Direction.RIGHT;
+                        case "up" -> Direction.UP;
+                        case "down" -> Direction.DOWN;
+                        default ->
+                            throw new RuntimeException(
+                                "turn: directions are 'up', 'left', 'down', 'right'");
+                      };
+                  default -> throw new RuntimeException("turn: string argument expected");
+                };
+
+            Game.hero()
+                .flatMap(h -> h.fetch(VelocityComponent.class))
+                .map(
+                    vc -> {
+                      vc.applyForce("Movement", dir);
+                      return vc;
+                    });
 
             return new BoolVal(true);
           });
-
 }
