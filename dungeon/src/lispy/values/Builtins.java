@@ -2,6 +2,7 @@ package lispy.values;
 
 import static lispy.Error.error;
 import static lispy.Error.throwIf;
+import static lispy.values.Value.*;
 
 import contrib.utils.EntityUtils;
 import contrib.utils.components.skill.FireballSkill;
@@ -29,7 +30,7 @@ public class Builtins {
                 throwIf(args.size() != 2, "cons: expected two arguments");
 
                 Value head = args.getFirst();
-                ListVal tail = Value.asList(args.getLast());
+                ListVal tail = asList(args.getLast());
                 List<Value> out = new ArrayList<>(tail.elements().size() + 1);
                 out.add(head);
                 out.addAll(tail.elements());
@@ -39,7 +40,7 @@ public class Builtins {
               args -> {
                 throwIf(args.size() != 1, "head: expected one argument");
 
-                ListVal l = Value.asList(args.getFirst());
+                ListVal l = asList(args.getFirst());
                 throwIf(l.isEmpty(), "head: got empty list");
                 return l.elements().getFirst();
               },
@@ -47,7 +48,7 @@ public class Builtins {
               args -> {
                 throwIf(args.size() != 1, "tail: expected one argument");
 
-                ListVal l = Value.asList(args.getFirst());
+                ListVal l = asList(args.getFirst());
                 throwIf(l.isEmpty(), "tail: got empty list");
                 return ListVal.of(l.elements().subList(1, l.elements().size()));
               },
@@ -55,14 +56,14 @@ public class Builtins {
               args -> {
                 throwIf(args.size() != 1, "empty?: expected one argument");
 
-                ListVal l = Value.asList(args.getFirst());
+                ListVal l = asList(args.getFirst());
                 return new BoolVal(l.isEmpty());
               },
           "length",
               args -> {
                 throwIf(args.size() != 1, "length: expected one argument");
 
-                ListVal l = Value.asList(args.getFirst());
+                ListVal l = asList(args.getFirst());
                 return new NumVal(l.elements().size());
               },
           "append",
@@ -76,8 +77,8 @@ public class Builtins {
               args -> {
                 throwIf(args.size() != 2, "nth: expected two arguments");
 
-                int i = Value.asNum(args.getFirst());
-                ListVal l = Value.asList(args.getLast());
+                int i = asNum(args.getFirst());
+                ListVal l = asList(args.getLast());
                 throwIf(i < 0 || i >= l.elements().size(), "nth: index out of bounds");
                 return l.elements().get(i);
               });
@@ -98,7 +99,7 @@ public class Builtins {
           "not",
           args -> {
             throwIf(args.size() != 1, "not: expected one argument");
-            return new BoolVal(!Value.isTruthy(args.getFirst()));
+            return new BoolVal(!isTruthy(args.getFirst()));
           },
           "=",
           args -> {
@@ -106,7 +107,7 @@ public class Builtins {
 
             if (args.size() == 1) return new BoolVal(true);
             Value res = args.getFirst();
-            return new BoolVal(args.stream().skip(1).allMatch(v -> Value.valueEquals(res, v)));
+            return new BoolVal(args.stream().skip(1).allMatch(v -> valueEquals(res, v)));
           },
           ">",
           args -> {
@@ -139,7 +140,7 @@ public class Builtins {
           args -> {
             throwIf(args.isEmpty(), "-: expected at least one argument");
 
-            int res = Value.asNum(args.getFirst());
+            int res = asNum(args.getFirst());
             if (args.size() == 1) return new NumVal(-1 * res);
             return new NumVal(args.stream().skip(1).map(Value::asNum).reduce(res, (a, b) -> a - b));
           },
@@ -152,7 +153,7 @@ public class Builtins {
           args -> {
             throwIf(args.isEmpty(), "/: expected at least one argument");
 
-            int res = Value.asNum(args.getFirst());
+            int res = asNum(args.getFirst());
             if (args.size() == 1) return new NumVal(1 / res);
             return new NumVal(args.stream().skip(1).map(Value::asNum).reduce(res, (a, b) -> a / b));
           });
@@ -174,7 +175,7 @@ public class Builtins {
           "move",
           args -> {
             throwIf(args.isEmpty(), "move: expected at least one argument");
-            int steps = Value.asNum(args.getFirst());
+            int steps = asNum(args.getFirst());
 
             Vector2 newForce =
                 Vector2.of(10 * steps, 10 * steps).scale(EntityUtils.getHeroViewDirection());

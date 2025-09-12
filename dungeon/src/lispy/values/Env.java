@@ -1,6 +1,7 @@
 package lispy.values;
 
 import static lispy.Error.error;
+import static lispy.values.Value.*;
 
 import java.util.HashMap;
 import java.util.List;

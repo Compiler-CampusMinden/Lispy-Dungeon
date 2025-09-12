@@ -1,9 +1,13 @@
 package lispy.values;
 
 import static lispy.Error.error;
+import static lispy.Error.throwIf;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.IntStream;
+import lispy.Interpreter;
+import lispy.ast.Expr;
 
 /**
  * Representation of values.
@@ -11,7 +15,8 @@ import java.util.stream.IntStream;
  * <p>we could just use Integer, String, Boolean ... however, this allows us to use a nice little
  * type (instead of Object) and to use pattern matching with switch/case
  */
-public sealed interface Value permits NumVal, StrVal, BoolVal, ListVal, FnVal {
+public sealed interface Value
+    permits Value.NumVal, Value.StrVal, Value.BoolVal, Value.ListVal, Value.FnVal {
   /**
    * Read value as Integer.
    *
@@ -106,5 +111,116 @@ public sealed interface Value permits NumVal, StrVal, BoolVal, ListVal, FnVal {
       case BuiltinFn f -> "<builtin " + f.name() + ">";
       case ClosureFn f -> "<fn " + f.name() + ">";
     };
+  }
+
+  /**
+   * Numeric value (actually int).
+   *
+   * @param value value (int)
+   */
+  record NumVal(int value) implements Value {}
+
+  /**
+   * String value.
+   *
+   * @param value value (string)
+   */
+  record StrVal(String value) implements Value {}
+
+  /**
+   * Boolean.
+   *
+   * @param value bool
+   */
+  record BoolVal(boolean value) implements Value {}
+
+  /**
+   * Lists.
+   *
+   * @param elements list of values
+   */
+  record ListVal(List<Value> elements) implements Value {
+    /**
+     * create a new list value.
+     *
+     * @param vs list of values
+     * @return new list value
+     */
+    public static ListVal of(List<Value> vs) {
+      return new ListVal(vs);
+    }
+
+    /**
+     * is this list empty?
+     *
+     * @return true if empty
+     */
+    public boolean isEmpty() {
+      return elements.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+      return elements.stream()
+          .map(Value::pretty)
+          .reduce(
+              new StringBuilder("("),
+              (sb, s) -> sb.length() == 1 ? sb.append(s) : sb.append(' ').append(s),
+              StringBuilder::append)
+          .append(')')
+          .toString();
+    }
+  }
+
+  /** Functions in Lispy. */
+  sealed interface FnVal extends Value permits BuiltinFn, ClosureFn {
+    /**
+     * Apply function to arguments.
+     *
+     * @param args list of arguments
+     * @return function result
+     */
+    Value apply(List<Value> args);
+  }
+
+  /**
+   * Builtin functions.
+   *
+   * @param name fn name
+   * @param impl reference to implementation (lambda)
+   */
+  record BuiltinFn(String name, Function<List<Value>, Value> impl) implements FnVal {
+    @Override
+    public Value apply(List<Value> args) {
+      return impl.apply(args);
+    }
+  }
+
+  /**
+   * User defined functions (in Lispy).
+   *
+   * @param name fn name
+   * @param params list of param names
+   * @param body expression (fn body)
+   * @param closureEnv closure
+   */
+  record ClosureFn(String name, List<String> params, Expr body, Env closureEnv) implements FnVal {
+    @Override
+    public Value apply(List<Value> args) {
+      throwIf(
+          args.size() != params.size(),
+          "arity mismatch when calling "
+              + name
+              + ": expected "
+              + params.size()
+              + ", got "
+              + args.size());
+
+      Env callenv = new Env(closureEnv);
+      for (int i = 0; i < params.size(); i++) {
+        callenv.define(params.get(i), args.get(i));
+      }
+      return Interpreter.eval(body, callenv);
+    }
   }
 }
