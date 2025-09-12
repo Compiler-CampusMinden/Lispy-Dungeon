@@ -29,7 +29,7 @@ public class Parser {
    * @return parsed AST
    */
   public static Program parseString(String source) {
-    return new Parser(Lexer.from(source)).parseProgram();
+    return new Parser(Lexer.from(source)).program();
   }
 
   /**
@@ -40,55 +40,55 @@ public class Parser {
    * @throws IOException when encountering issues while file handling
    */
   public static Program parseFile(Path path) throws IOException {
-    return new Parser(Lexer.from(path)).parseProgram();
+    return new Parser(Lexer.from(path)).program();
   }
 
-  private Program parseProgram() {
+  private Program program() {
     List<Expr> exprs = new ArrayList<>();
     while (lookahead.type() != EOF) {
-      exprs.add(parseExpr());
+      exprs.add(expression());
     }
     return new Program(exprs);
   }
 
-  private Expr parseExpr() {
+  private Expr expression() {
     return switch (lookahead.type()) {
-      case NUMBER -> parseNumber();
-      case STRING -> parseString();
-      case TRUE -> parseTrue();
-      case FALSE -> parseFalse();
-      case ID -> parseSymbol();
-      case LPAREN -> parseList();
+      case NUMBER -> number();
+      case STRING -> string();
+      case TRUE -> boolTrue();
+      case FALSE -> boolFalse();
+      case ID -> symbol();
+      case LPAREN -> list();
       default -> throw error("unexpected token in expr: " + lookahead);
     };
   }
 
-  private Expr parseNumber() {
+  private Expr number() {
     Token t = match(NUMBER);
     return new NumberLiteral(Integer.parseInt(t.lexeme()));
   }
 
-  private Expr parseString() {
+  private Expr string() {
     Token t = match(STRING);
     return new StringLiteral(t.lexeme());
   }
 
-  private Expr parseTrue() {
+  private Expr boolTrue() {
     match(TRUE);
     return new BoolLiteral(true);
   }
 
-  private Expr parseFalse() {
+  private Expr boolFalse() {
     match(FALSE);
     return new BoolLiteral(false);
   }
 
-  private Expr parseSymbol() {
+  private Expr symbol() {
     Token t = match(ID);
     return new SymbolExpr(t.lexeme());
   }
 
-  private Expr parseList() {
+  private Expr list() {
     match(LPAREN);
 
     List<Expr> elements = new ArrayList<>();
@@ -102,7 +102,7 @@ public class Parser {
     }
 
     while (isExprStart(lookahead.type())) {
-      elements.add(parseExpr());
+      elements.add(expression());
     }
 
     match(RPAREN);
