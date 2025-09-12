@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 import lispy.ast.*;
 import lispy.token.Token;
-import lispy.token.Type;
+import lispy.token.TokenType;
 
 /** LL(1) parser (recursive descent). */
 public class Parser {
@@ -42,7 +42,7 @@ public class Parser {
 
   private Program parseProgram() {
     List<Expr> exprs = new ArrayList<>();
-    while (lookahead.type() != Type.EOF) {
+    while (lookahead.type() != TokenType.EOF) {
       exprs.add(parseExpr());
     }
     return new Program(exprs);
@@ -61,32 +61,32 @@ public class Parser {
   }
 
   private Expr parseNumber() {
-    Token t = match(Type.NUMBER);
+    Token t = match(TokenType.NUMBER);
     return new NumberLiteral(Integer.parseInt(t.lexeme()));
   }
 
   private Expr parseString() {
-    Token t = match(Type.STRING);
+    Token t = match(TokenType.STRING);
     return new StringLiteral(t.lexeme());
   }
 
   private Expr parseTrue() {
-    match(Type.TRUE);
+    match(TokenType.TRUE);
     return new BoolLiteral(true);
   }
 
   private Expr parseFalse() {
-    match(Type.FALSE);
+    match(TokenType.FALSE);
     return new BoolLiteral(false);
   }
 
   private Expr parseSymbol() {
-    Token t = match(Type.ID);
+    Token t = match(TokenType.ID);
     return new SymbolExpr(t.lexeme());
   }
 
   private Expr parseList() {
-    match(Type.LPAREN);
+    match(TokenType.LPAREN);
 
     List<Expr> elements = new ArrayList<>();
 
@@ -102,11 +102,11 @@ public class Parser {
       elements.add(parseExpr());
     }
 
-    match(Type.RPAREN);
+    match(TokenType.RPAREN);
     return new ListExpr(elements);
   }
 
-  private static boolean isExprStart(Type t) {
+  private static boolean isExprStart(TokenType t) {
     return switch (t) {
       case NUMBER, STRING, TRUE, FALSE, ID, LPAREN -> true;
       default -> false;
@@ -117,7 +117,7 @@ public class Parser {
     lookahead = lexer.nextToken();
   }
 
-  private Token match(Type expected) {
+  private Token match(TokenType expected) {
     if (lookahead.type() == expected) {
       Token t = lookahead;
       consume();

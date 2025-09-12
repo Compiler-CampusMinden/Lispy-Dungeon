@@ -160,7 +160,7 @@ public interface ILevel extends IndexedGraph<Tile> {
    * random tile of that type from the corresponding list in the level. If the list for the
    * specified type is empty, the method returns null.
    *
-   * @param elementType Type of the tile to retrieve.
+   * @param elementType TokenType of the tile to retrieve.
    * @return A random tile of the specified type, or empty if the list for that type is empty.
    */
   default Optional<Tile> randomTile(final LevelElement elementType) {
@@ -369,7 +369,7 @@ public interface ILevel extends IndexedGraph<Tile> {
    * <p>The method internally calls {@link #randomTile(LevelElement)} to obtain a random tile of the
    * specified type and then retrieves its position.
    *
-   * @param elementType Type of the tile for which to retrieve the position.
+   * @param elementType TokenType of the tile for which to retrieve the position.
    * @return The position of a randomly selected tile of the specified type in the level as a {@link
    *     Point}.
    */

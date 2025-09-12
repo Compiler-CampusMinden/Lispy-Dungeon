@@ -1,7 +1,7 @@
 package lispy.token;
 
 /** Token type. */
-public enum Type {
+public enum TokenType {
   /** '('. */
   LPAREN,
   /** ')'. */

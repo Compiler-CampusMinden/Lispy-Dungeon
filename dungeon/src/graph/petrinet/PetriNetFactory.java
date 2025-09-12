@@ -83,7 +83,7 @@ public class PetriNetFactory {
    * @param on "Main" net where the second net gets connected (for example, this is the base task)
    * @param connect Second net that will be connected to the first net (for example, this is the
    *     subtask)
-   * @param type Type of the dependency between the nets
+   * @param type TokenType of the dependency between the nets
    */
   public static void connect(final PetriNet on, final PetriNet connect, final TaskEdge.Type type) {
     switch (type) {
@@ -110,7 +110,7 @@ public class PetriNetFactory {
         break;
       default:
         throw new RuntimeException(
-            "Unsported Edge-Type in TaskDepencyGraph. Can not convert into Petri-Net.");
+            "Unsported Edge-TokenType in TaskDepencyGraph. Can not convert into Petri-Net.");
     }
   }
 

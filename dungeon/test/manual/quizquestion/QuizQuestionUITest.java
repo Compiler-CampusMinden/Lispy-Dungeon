@@ -55,7 +55,7 @@ public class QuizQuestionUITest {
   }
 
   /**
-   * This class contains a Collection of simple QuizQuestion of each Type (Text, Image, Image +
+   * This class contains a Collection of simple QuizQuestion of each TokenType (Text, Image, Image +
    * Text. It can be used for testing as long as the QuizQuestion can not be loaded over the dsl
    * input Use {@code DummyQuizQuestionList.getRandomQuestion} to get a random QuizQuestion.
    *

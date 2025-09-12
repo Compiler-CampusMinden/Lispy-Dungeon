@@ -8,7 +8,7 @@ import java.util.Objects;
  * type. Depending on the type the variable has either an int as value or an int array as a value.
  */
 public class Variable {
-  /** Type of the variable. Will either be set to "array" or "base". */
+  /** TokenType of the variable. Will either be set to "array" or "base". */
   public String type;
 
   /** Integer value of the variable. */

@@ -46,7 +46,7 @@ public class LispySystem extends System {
     super();
 
     // greetings
-    println("Lispy – REPL (Java 21). Type :q to quit.");
+    println("Lispy – REPL (Java 21). TokenType :q to quit.");
 
     // start I/O thread (once)
     if (ioStarted.compareAndSet(false, true)) {

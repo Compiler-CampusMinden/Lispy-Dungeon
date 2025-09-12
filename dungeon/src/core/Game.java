@@ -607,7 +607,7 @@ public final class Game {
   /**
    * Get a random tile of the given type.
    *
-   * @param elementType Type of the tile.
+   * @param elementType TokenType of the tile.
    * @return A random tile of the given type or an empty Optional if there is no tile of that type.
    */
   public static Optional<Tile> randomTile(final LevelElement elementType) {
@@ -626,7 +626,7 @@ public final class Game {
   /**
    * Get the position of a random Tile as Point.
    *
-   * @param elementTyp Type of the Tile.
+   * @param elementTyp TokenType of the Tile.
    * @return Position of the Tile as Point or an empty Optional if there is no tile of that type.
    */
   public static Optional<Point> randomTilePoint(final LevelElement elementTyp) {
@@ -666,7 +666,7 @@ public final class Game {
   /**
    * Get all tiles of the specified type from the current level.
    *
-   * @param elementTyp Type of the tiles to retrieve.
+   * @param elementTyp TokenType of the tiles to retrieve.
    * @return A Set containing all tiles of the specified type in the current level.
    */
   public static Set<Tile> allTiles(final LevelElement elementTyp) {

@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.util.Objects;
 import java.util.function.Predicate;
 import lispy.token.Token;
-import lispy.token.Type;
+import lispy.token.TokenType;
 
 /** Lexer (recursive descent). */
 public class Lexer {
@@ -50,41 +50,41 @@ public class Lexer {
       switch (c) {
         case '(' -> {
           consume();
-          return Token.of(Type.LPAREN, "(");
+          return Token.of(TokenType.LPAREN, "(");
         }
         case ')' -> {
           consume();
-          return Token.of(Type.RPAREN, ")");
+          return Token.of(TokenType.RPAREN, ")");
         }
         case '+', '-', '*', '/', '=', '>', '<' -> {
           consume();
-          return Token.of(Type.OP, String.valueOf(c));
+          return Token.of(TokenType.OP, String.valueOf(c));
         }
         case '"' -> {
           consume();
           String s = readStringLiteral();
-          return Token.of(Type.STRING, s);
+          return Token.of(TokenType.STRING, s);
         }
         case ';' -> skipComments();
         case ' ', ',', '\t', '\n', '\r' -> skipWhitespace();
         default -> {
           if (isDigit(c)) {
             String num = readWhile(Lexer::isDigit);
-            return Token.of(Type.NUMBER, num);
+            return Token.of(TokenType.NUMBER, num);
           }
           if (isLetter(c)) {
             String id = readWhile(Lexer::isLetterOrDigit);
             return switch (id) {
-              case "true" -> Token.of(Type.TRUE, id);
-              case "false" -> Token.of(Type.FALSE, id);
-              default -> Token.of(Type.ID, id);
+              case "true" -> Token.of(TokenType.TRUE, id);
+              case "false" -> Token.of(TokenType.FALSE, id);
+              default -> Token.of(TokenType.ID, id);
             };
           }
           throw new RuntimeException("unexpected character '" + c + "'");
         }
       }
     }
-    return Token.of(Type.EOF, "<EOF>");
+    return Token.of(TokenType.EOF, "<EOF>");
   }
 
   private boolean eof() {
