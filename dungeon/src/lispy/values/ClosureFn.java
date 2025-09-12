@@ -28,6 +28,6 @@ public record ClosureFn(String name, List<String> params, Expr body, Env closure
     for (int i = 0; i < params.size(); i++) {
       call.define(params.get(i), args.get(i));
     }
-    return Interpreter.evaluate(body, call);
+    return Interpreter.eval(body, call);
   }
 }

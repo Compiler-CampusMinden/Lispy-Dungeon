@@ -14,7 +14,7 @@ class InterpreterTest {
     Program p = Program.of(new NumberLiteral(42));
 
     // when
-    Value res = Interpreter.evaluate(p);
+    Value res = Interpreter.eval(p);
 
     // then
     assertEquals("42", Value.pretty(res));
@@ -26,7 +26,7 @@ class InterpreterTest {
     Program p = Program.of(new StringLiteral("wuppieFluppie"));
 
     // when
-    Value res = Interpreter.evaluate(p);
+    Value res = Interpreter.eval(p);
 
     // then
     assertEquals("\"wuppieFluppie\"", Value.pretty(res));
@@ -38,7 +38,7 @@ class InterpreterTest {
     Program p = Program.of(new BoolLiteral(true));
 
     // when
-    Value res = Interpreter.evaluate(p);
+    Value res = Interpreter.eval(p);
 
     // then
     assertEquals("true", Value.pretty(res));
@@ -50,7 +50,7 @@ class InterpreterTest {
     Program p = Program.of(new BoolLiteral(false));
 
     // when
-    Value res = Interpreter.evaluate(p);
+    Value res = Interpreter.eval(p);
 
     // then
     assertEquals("false", Value.pretty(res));
@@ -62,7 +62,7 @@ class InterpreterTest {
     Program p = Program.of(new SymbolExpr("wuppie"));
 
     // when, then
-    assertThrows(RuntimeException.class, () -> Interpreter.evaluate(p));
+    assertThrows(RuntimeException.class, () -> Interpreter.eval(p));
   }
 
   @Test
@@ -77,7 +77,7 @@ class InterpreterTest {
                 new StringLiteral("wuppie")));
 
     // when
-    Value res = Interpreter.evaluate(p);
+    Value res = Interpreter.eval(p);
 
     // then
     assertEquals("(42 7 \"wuppie\")", Value.pretty(res));
@@ -97,7 +97,7 @@ class InterpreterTest {
                     new StringLiteral("wuppie"))));
 
     // when
-    Value res = Interpreter.evaluate(p);
+    Value res = Interpreter.eval(p);
 
     // then
     assertEquals("42", Value.pretty(res));
@@ -117,7 +117,7 @@ class InterpreterTest {
                     new StringLiteral("wuppie"))));
 
     // when
-    Value res = Interpreter.evaluate(p);
+    Value res = Interpreter.eval(p);
 
     // then
     assertEquals("(7 \"wuppie\")", Value.pretty(res));
@@ -140,7 +140,7 @@ class InterpreterTest {
                         new StringLiteral("wuppie")))));
 
     // when
-    Value res = Interpreter.evaluate(p);
+    Value res = Interpreter.eval(p);
 
     // then
     assertEquals("(true 7 \"wuppie\")", Value.pretty(res));
@@ -158,7 +158,7 @@ class InterpreterTest {
                 ListExpr.of(new SymbolExpr("print"), new StringLiteral("WUPPIE"))));
 
     // when
-    Value res = Interpreter.evaluate(p);
+    Value res = Interpreter.eval(p);
 
     // then
     assertEquals("\"true\"", Value.pretty(res));
@@ -176,7 +176,7 @@ class InterpreterTest {
                 ListExpr.of(new SymbolExpr("print"), new StringLiteral("WUPPIE"))));
 
     // when
-    Value res = Interpreter.evaluate(p);
+    Value res = Interpreter.eval(p);
 
     // then
     assertEquals("\"WUPPIE\"", Value.pretty(res));
@@ -191,7 +191,7 @@ class InterpreterTest {
             ListExpr.of(new SymbolExpr("print"), new SymbolExpr("wuppie")));
 
     // when
-    Value res = Interpreter.evaluate(p);
+    Value res = Interpreter.eval(p);
 
     // then
     assertEquals("5", Value.pretty(res));
@@ -216,7 +216,7 @@ class InterpreterTest {
                         new SymbolExpr("wuppie")))));
 
     // when
-    Value res = Interpreter.evaluate(p);
+    Value res = Interpreter.eval(p);
 
     // then
     assertEquals("<fn foo>", Value.pretty(res));
@@ -252,7 +252,7 @@ class InterpreterTest {
             ListExpr.of(new SymbolExpr("print"), new SymbolExpr("a")));
 
     // when
-    Value res = Interpreter.evaluate(p);
+    Value res = Interpreter.eval(p);
 
     // then
     assertEquals("10", Value.pretty(res));
@@ -281,7 +281,7 @@ class InterpreterTest {
                 ListExpr.of(new SymbolExpr("foo"), new NumberLiteral(1))));
 
     // when, then
-    assertThrows(RuntimeException.class, () -> Interpreter.evaluate(p));
+    assertThrows(RuntimeException.class, () -> Interpreter.eval(p));
   }
 
   @Test
@@ -297,7 +297,7 @@ class InterpreterTest {
                 new NumberLiteral(1000)));
 
     // when
-    Value res = Interpreter.evaluate(p);
+    Value res = Interpreter.eval(p);
 
     // then
     assertEquals("1111", Value.pretty(res));
@@ -315,7 +315,7 @@ class InterpreterTest {
                 new NumberLiteral(1)));
 
     // when
-    Value res = Interpreter.evaluate(p);
+    Value res = Interpreter.eval(p);
 
     // then
     assertEquals("89", Value.pretty(res));
@@ -333,7 +333,7 @@ class InterpreterTest {
                 new NumberLiteral(2)));
 
     // when
-    Value res = Interpreter.evaluate(p);
+    Value res = Interpreter.eval(p);
 
     // then
     assertEquals("2000", Value.pretty(res));
@@ -351,7 +351,7 @@ class InterpreterTest {
                 new NumberLiteral(2)));
 
     // when
-    Value res = Interpreter.evaluate(p);
+    Value res = Interpreter.eval(p);
 
     // then
     assertEquals("5", Value.pretty(res));
@@ -379,7 +379,7 @@ class InterpreterTest {
             ListExpr.of(new SymbolExpr("fac"), new NumberLiteral(5)));
 
     // when
-    Value res = Interpreter.evaluate(p);
+    Value res = Interpreter.eval(p);
 
     // then
     assertEquals("120", Value.pretty(res));

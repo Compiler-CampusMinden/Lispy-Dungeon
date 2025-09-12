@@ -7,7 +7,7 @@ import java.util.List;
  *
  * @param expressions expressions
  */
-public record Program(List<Expr> expressions) implements AST {
+public record Program(List<Expr> expressions) {
   /**
    * create a new programm expression.
    *

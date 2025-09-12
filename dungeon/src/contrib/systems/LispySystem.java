@@ -12,7 +12,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lispy.Interpreter;
 import lispy.Parser;
-import lispy.ast.Expr;
 import lispy.ast.Program;
 import lispy.values.Env;
 import lispy.values.Value;
@@ -74,10 +73,8 @@ public class LispySystem extends System {
 
     try {
       Program p = Parser.parseString(task.code);
-      for (Expr e : p.expressions()) {
-        Value v = Interpreter.evaluate(e, env);
-        task.results.add(Value.pretty(v));
-      }
+      Value v = Interpreter.eval(p, env);
+      task.results.add(Value.pretty(v));
     } catch (Exception e) {
       task.error.add("interpreter error: " + e.getMessage());
     } finally {

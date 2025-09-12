@@ -21,42 +21,43 @@ public class Interpreter {
   }
 
   /**
-   * Evaluate an AST.
+   * Evaluate a program.
    *
    * @param program ast to evaluate
-   * @return result of valuation
+   * @return result of evaluation
    */
-  public static Value evaluate(AST program) {
+  public static Value eval(Program program) {
     return eval(program, newGlobalEnv());
   }
 
   /**
-   * Evaluate an AST in a given environment.
+   * Evaluate a program in a given environment.
    *
    * @param program ast to evaluate
    * @param env environment to evaluate in
-   * @return result of valuation
+   * @return result of evaluation
    */
-  public static Value evaluate(AST program, Env env) {
-    return eval(program, env);
+  public static Value eval(Program program, Env env) {
+    return program.expressions().stream()
+        .map(e -> eval(e, env))
+        .reduce(new BoolVal(false), (prev, curr) -> curr);
   }
 
-  // main interpreter dispatch
-  private static Value eval(AST expr, Env env) {
+  /**
+   * main interpreter dispatch.
+   *
+   * @param expr ast to evaluate
+   * @param env environment to evaluate in
+   * @return result of evaluation
+   */
+  public static Value eval(Expr expr, Env env) {
     return switch (expr) {
-      case Program p -> evalProgram(p, env);
       case NumberLiteral n -> new NumVal(n.value());
       case StringLiteral s -> new StrVal(s.value());
       case BoolLiteral b -> new BoolVal(b.value());
       case SymbolExpr s -> env.get(s.name());
       case ListExpr list -> evalList(list, env);
     };
-  }
-
-  private static Value evalProgram(Program program, Env env) {
-    return program.expressions().stream()
-        .map(e -> eval(e, env))
-        .reduce(new BoolVal(false), (prev, curr) -> curr);
   }
 
   private static Value evalList(ListExpr list, Env env) {
