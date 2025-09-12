@@ -1,5 +1,7 @@
 package lispy;
 
+import static lispy.token.TokenType.*;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -7,7 +9,6 @@ import java.nio.file.Path;
 import java.util.Objects;
 import java.util.function.Predicate;
 import lispy.token.Token;
-import lispy.token.TokenType;
 
 /** Lexer (recursive descent). */
 public class Lexer {
@@ -50,41 +51,41 @@ public class Lexer {
       switch (c) {
         case '(' -> {
           consume();
-          return Token.of(TokenType.LPAREN, "(");
+          return Token.of(LPAREN, "(");
         }
         case ')' -> {
           consume();
-          return Token.of(TokenType.RPAREN, ")");
+          return Token.of(RPAREN, ")");
         }
         case '+', '-', '*', '/', '=', '>', '<' -> {
           consume();
-          return Token.of(TokenType.OP, String.valueOf(c));
+          return Token.of(OP, String.valueOf(c));
         }
         case '"' -> {
           consume();
           String s = readStringLiteral();
-          return Token.of(TokenType.STRING, s);
+          return Token.of(STRING, s);
         }
         case ';' -> skipComments();
         case ' ', ',', '\t', '\n', '\r' -> skipWhitespace();
         default -> {
           if (isDigit(c)) {
             String num = readWhile(Lexer::isDigit);
-            return Token.of(TokenType.NUMBER, num);
+            return Token.of(NUMBER, num);
           }
           if (isLetter(c)) {
             String id = readWhile(Lexer::isLetterOrDigit);
             return switch (id) {
-              case "true" -> Token.of(TokenType.TRUE, id);
-              case "false" -> Token.of(TokenType.FALSE, id);
-              default -> Token.of(TokenType.ID, id);
+              case "true" -> Token.of(TRUE, id);
+              case "false" -> Token.of(FALSE, id);
+              default -> Token.of(ID, id);
             };
           }
           throw new RuntimeException("unexpected character '" + c + "'");
         }
       }
     }
-    return Token.of(TokenType.EOF, "<EOF>");
+    return Token.of(EOF, "<EOF>");
   }
 
   private boolean eof() {
