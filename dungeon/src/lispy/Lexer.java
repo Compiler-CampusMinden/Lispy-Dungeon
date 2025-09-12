@@ -47,36 +47,20 @@ public class Lexer {
    * @return next token
    */
   public Token nextToken() {
-    while (!eof()) {
-      char c = peek();
-      switch (c) {
-        case '(' -> {
-          consume();
-          return Token.of(LPAREN, "(");
-        }
-        case ')' -> {
-          consume();
-          return Token.of(RPAREN, ")");
-        }
-        case '+', '-', '*', '/', '=', '>', '<' -> {
-          consume();
-          return Token.of(OP, String.valueOf(c));
-        }
-        case '"' -> {
-          consume();
-          String s = readStringLiteral();
-          return Token.of(STRING, s);
-        }
-        case ';' -> skipComments();
-        case ' ', ',', '\t', '\n', '\r' -> skipWhitespace();
+    goobleWhiteSpaceAndComments();
+
+    if (!eof()) {
+      char c = consume();
+      return switch (c) {
+        case '(' -> Token.of(LPAREN, "(");
+        case ')' -> Token.of(RPAREN, ")");
+        case '+', '-', '*', '/', '=', '>', '<' -> Token.of(OP, String.valueOf(c));
+        case '"' -> Token.of(STRING, readStringLiteral());
         default -> {
-          if (isDigit(c)) {
-            String num = readWhile(Lexer::isDigit);
-            return Token.of(NUMBER, num);
-          }
+          if (isDigit(c)) yield Token.of(NUMBER, c + readWhile(Lexer::isDigit));
           if (isLetter(c)) {
-            String id = readWhile(Lexer::isLetterOrDigit);
-            return switch (id) {
+            String id = c + readWhile(Lexer::isLetterOrDigit);
+            yield switch (id) {
               case "true" -> Token.of(TRUE, id);
               case "false" -> Token.of(FALSE, id);
               default -> Token.of(ID, id);
@@ -84,7 +68,7 @@ public class Lexer {
           }
           throw error("unexpected character '" + c + "'");
         }
-      }
+      };
     }
     return Token.of(EOF, "<EOF>");
   }
@@ -97,28 +81,19 @@ public class Lexer {
     return (index < input.length()) ? input.charAt(index) : '\0';
   }
 
-  private char peekNext() {
-    return (index + 1 < input.length()) ? input.charAt(index + 1) : '\0';
-  }
-
-  private void consume() {
-    index++;
+  private char consume() {
+    return (index < input.length()) ? input.charAt(index++) : '\0';
   }
 
   private boolean match(char c) {
-    if (peekNext() == c) {
-      consume();
-      return true;
-    }
-    return false;
+    if (peek() != c) return false;
+    consume();
+    return true;
   }
 
   private String readWhile(Predicate<Character> pred) {
     StringBuilder sb = new StringBuilder();
-    while (!eof() && pred.test(peek())) {
-      sb.append(peek());
-      consume();
-    }
+    while (!eof() && pred.test(peek())) sb.append(consume());
     return sb.toString();
   }
 
@@ -131,6 +106,18 @@ public class Lexer {
     else if (peek() == '\0') throw error("string not terminated (found EOF before matching '\"')");
 
     return s;
+  }
+
+  private void goobleWhiteSpaceAndComments() {
+    while (!eof()) {
+      switch (peek()) {
+        case ';' -> skipComments();
+        case ' ', ',', '\t', '\n', '\r' -> skipWhitespace();
+        default -> {
+          return;
+        }
+      }
+    }
   }
 
   private void skipComments() {
