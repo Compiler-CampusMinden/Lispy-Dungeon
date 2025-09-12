@@ -1,5 +1,6 @@
 package lispy;
 
+import static lispy.Error.*;
 import static lispy.token.TokenType.*;
 
 import java.io.IOException;
@@ -81,7 +82,7 @@ public class Lexer {
               default -> Token.of(ID, id);
             };
           }
-          throw new RuntimeException("unexpected character '" + c + "'");
+          throw error("unexpected character '" + c + "'");
         }
       }
     }
@@ -126,9 +127,8 @@ public class Lexer {
 
     if (peek() == '"') consume(); // closing '"'
     else if (peek() == '\n' || peek() == '\r')
-      throw new RuntimeException("string not terminated (found line end before matching '\"')");
-    else if (peek() == '\0')
-      throw new RuntimeException("string not terminated (found EOF before matching '\"')");
+      throw error("string not terminated (found line end before matching '\"')");
+    else if (peek() == '\0') throw error("string not terminated (found EOF before matching '\"')");
 
     return s;
   }

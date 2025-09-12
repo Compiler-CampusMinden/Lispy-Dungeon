@@ -1,5 +1,8 @@
 package lispy.values;
 
+import static lispy.Error.error;
+import static lispy.Error.throwIf;
+
 import contrib.utils.EntityUtils;
 import contrib.utils.components.skill.FireballSkill;
 import contrib.utils.components.skill.Skill;
@@ -23,7 +26,7 @@ public class Builtins {
           "list", ListVal::of,
           "cons",
               args -> {
-                if (args.size() != 2) throw new RuntimeException("cons: expected two arguments");
+                throwIf(args.size() != 2, "cons: expected two arguments");
 
                 Value head = args.getFirst();
                 ListVal tail = Value.asList(args.getLast());
@@ -34,30 +37,30 @@ public class Builtins {
               },
           "head",
               args -> {
-                if (args.size() != 1) throw new RuntimeException("head: expected one argument");
+                throwIf(args.size() != 1, "head: expected one argument");
 
                 ListVal l = Value.asList(args.getFirst());
-                if (l.isEmpty()) throw new RuntimeException("head: got empty list");
+                throwIf(l.isEmpty(), "head: got empty list");
                 return l.elements().getFirst();
               },
           "tail",
               args -> {
-                if (args.size() != 1) throw new RuntimeException("tail: expected one argument");
+                throwIf(args.size() != 1, "tail: expected one argument");
 
                 ListVal l = Value.asList(args.getFirst());
-                if (l.isEmpty()) throw new RuntimeException("tail: got empty list");
+                throwIf(l.isEmpty(), "tail: got empty list");
                 return ListVal.of(l.elements().subList(1, l.elements().size()));
               },
           "empty?",
               args -> {
-                if (args.size() != 1) throw new RuntimeException("empty?: expected one argument");
+                throwIf(args.size() != 1, "empty?: expected one argument");
 
                 ListVal l = Value.asList(args.getFirst());
                 return new BoolVal(l.isEmpty());
               },
           "length",
               args -> {
-                if (args.size() != 1) throw new RuntimeException("length: expected one argument");
+                throwIf(args.size() != 1, "length: expected one argument");
 
                 ListVal l = Value.asList(args.getFirst());
                 return new NumVal(l.elements().size());
@@ -71,12 +74,11 @@ public class Builtins {
                           .toList()),
           "nth",
               args -> {
-                if (args.size() != 2) throw new RuntimeException("nth: expected two arguments");
+                throwIf(args.size() != 2, "nth: expected two arguments");
 
                 int i = Value.asNum(args.getFirst());
                 ListVal l = Value.asList(args.getLast());
-                if (i < 0 || i >= l.elements().size())
-                  throw new RuntimeException("nth: index out of bounds");
+                throwIf(i < 0 || i >= l.elements().size(), "nth: index out of bounds");
                 return l.elements().get(i);
               });
 
@@ -95,12 +97,12 @@ public class Builtins {
       Map.of(
           "not",
           args -> {
-            if (args.size() != 1) throw new RuntimeException("not: expected one argument");
+            throwIf(args.size() != 1, "not: expected one argument");
             return new BoolVal(!Value.isTruthy(args.getFirst()));
           },
           "=",
           args -> {
-            if (args.isEmpty()) throw new RuntimeException("=: expected at least one argument");
+            throwIf(args.isEmpty(), "=: expected at least one argument");
 
             if (args.size() == 1) return new BoolVal(true);
             Value res = args.getFirst();
@@ -108,7 +110,7 @@ public class Builtins {
           },
           ">",
           args -> {
-            if (args.isEmpty()) throw new RuntimeException(">: expected at least one argument");
+            throwIf(args.isEmpty(), ">: expected at least one argument");
 
             List<Integer> list = args.stream().map(Value::asNum).toList();
             return new BoolVal(
@@ -117,7 +119,7 @@ public class Builtins {
           },
           "<",
           args -> {
-            if (args.isEmpty()) throw new RuntimeException("<: expected at least one argument");
+            throwIf(args.isEmpty(), "<: expected at least one argument");
 
             List<Integer> list = args.stream().map(Value::asNum).toList();
             return new BoolVal(
@@ -130,12 +132,12 @@ public class Builtins {
       Map.of(
           "+",
           args -> {
-            if (args.isEmpty()) throw new RuntimeException("+: expected at least one argument");
+            throwIf(args.isEmpty(), "+: expected at least one argument");
             return new NumVal(args.stream().map(Value::asNum).reduce(0, Integer::sum));
           },
           "-",
           args -> {
-            if (args.isEmpty()) throw new RuntimeException("-: expected at least one argument");
+            throwIf(args.isEmpty(), "-: expected at least one argument");
 
             int res = Value.asNum(args.getFirst());
             if (args.size() == 1) return new NumVal(-1 * res);
@@ -143,12 +145,12 @@ public class Builtins {
           },
           "*",
           args -> {
-            if (args.isEmpty()) throw new RuntimeException("*: expected at least one argument");
+            throwIf(args.isEmpty(), "*: expected at least one argument");
             return new NumVal(args.stream().map(Value::asNum).reduce(1, (a, b) -> a * b));
           },
           "/",
           args -> {
-            if (args.isEmpty()) throw new RuntimeException("/: expected at least one argument");
+            throwIf(args.isEmpty(), "/: expected at least one argument");
 
             int res = Value.asNum(args.getFirst());
             if (args.size() == 1) return new NumVal(1 / res);
@@ -171,7 +173,7 @@ public class Builtins {
           },
           "move",
           args -> {
-            if (args.isEmpty()) throw new RuntimeException("move: expected at least one argument");
+            throwIf(args.isEmpty(), "move: expected at least one argument");
             int steps = Value.asNum(args.getFirst());
 
             Vector2 newForce =
@@ -193,7 +195,7 @@ public class Builtins {
           },
           "turn",
           args -> {
-            if (args.isEmpty()) throw new RuntimeException("turn: expected at least one argument");
+            throwIf(args.isEmpty(), "turn: expected at least one argument");
 
             Direction dir =
                 switch (args.getFirst()) {
@@ -204,10 +206,9 @@ public class Builtins {
                         case "up" -> Direction.UP;
                         case "down" -> Direction.DOWN;
                         default ->
-                            throw new RuntimeException(
-                                "turn: directions are 'up', 'left', 'down', 'right'");
+                            throw error("turn: directions are 'up', 'left', 'down', 'right'");
                       };
-                  default -> throw new RuntimeException("turn: string argument expected");
+                  default -> throw error("turn: string argument expected");
                 };
 
             Game.hero()

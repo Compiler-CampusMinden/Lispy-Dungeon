@@ -1,5 +1,7 @@
 package lispy;
 
+import static lispy.Error.error;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -56,7 +58,7 @@ public class Parser {
       case FALSE -> parseFalse();
       case ID -> parseSymbol();
       case LPAREN -> parseList();
-      default -> throw new RuntimeException("unexpected token in expr: " + lookahead);
+      default -> throw error("unexpected token in expr: " + lookahead);
     };
   }
 
@@ -95,7 +97,7 @@ public class Parser {
         elements.add(new SymbolExpr(lookahead.lexeme()));
         consume();
       }
-      default -> throw new RuntimeException("ID or OP expected, got " + lookahead);
+      default -> throw error("ID or OP expected, got " + lookahead);
     }
 
     while (isExprStart(lookahead.type())) {
@@ -123,6 +125,6 @@ public class Parser {
       consume();
       return t;
     }
-    throw new RuntimeException("expected: " + expected + ", found: " + lookahead);
+    throw error("expected: " + expected + ", found: " + lookahead);
   }
 }

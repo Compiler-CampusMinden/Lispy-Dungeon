@@ -1,5 +1,7 @@
 package lispy.values;
 
+import static lispy.Error.error;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +59,6 @@ public class Env {
   public Value get(String name) {
     if (values.containsKey(name)) return values.get(name);
     else if (enclosing != null) return enclosing.get(name);
-    else throw new RuntimeException("unbound symbol: " + name);
+    else throw error("unbound symbol: " + name);
   }
 }

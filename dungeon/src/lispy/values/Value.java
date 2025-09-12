@@ -1,5 +1,7 @@
 package lispy.values;
 
+import static lispy.Error.error;
+
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -19,7 +21,7 @@ public sealed interface Value permits NumVal, StrVal, BoolVal, ListVal, FnVal {
   static Integer asNum(Value v) {
     return switch (v) {
       case NumVal(int value) -> value;
-      default -> throw new RuntimeException("number expected, got: " + Value.pretty(v));
+      default -> throw error("number expected, got: " + Value.pretty(v));
     };
   }
 
@@ -32,7 +34,7 @@ public sealed interface Value permits NumVal, StrVal, BoolVal, ListVal, FnVal {
   static ListVal asList(Value v) {
     return switch (v) {
       case ListVal l -> l;
-      default -> throw new RuntimeException("list expected, got: " + Value.pretty(v));
+      default -> throw error("list expected, got: " + Value.pretty(v));
     };
   }
 

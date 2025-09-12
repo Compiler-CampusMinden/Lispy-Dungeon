@@ -1,5 +1,8 @@
 package lispy;
 
+import static lispy.Error.error;
+import static lispy.Error.throwIf;
+
 import java.util.List;
 import lispy.ast.*;
 import lispy.values.*;
@@ -62,19 +65,17 @@ public class Interpreter {
 
   private static Value evalList(ListExpr list, Env env) {
     List<Expr> elems = list.elements();
-    if (elems.isEmpty()) throw new RuntimeException("cannot evaluate empty list");
+    throwIf(elems.isEmpty(), "cannot evaluate empty list");
 
     return switch (elems.getFirst()) {
       case SymbolExpr s -> evalList(s, list, env);
-      default ->
-          throw new RuntimeException(
-              "first element must be a symbol or op, got" + elems.getFirst());
+      default -> throw error("first element must be a symbol or op, got" + elems.getFirst());
     };
   }
 
   private static Value evalList(SymbolExpr headExpr, ListExpr list, Env env) {
     List<Expr> elems = list.elements();
-    if (elems.isEmpty()) throw new RuntimeException("cannot evaluate empty list");
+    throwIf(elems.isEmpty(), "cannot evaluate empty list");
 
     return switch (headExpr.name()) {
       case "let" -> evalLet(elems, env);
@@ -87,16 +88,14 @@ public class Interpreter {
   }
 
   private static Value evalLet(List<Expr> elems, Env env) {
-    if (elems.size() < 3) throw new RuntimeException("let: too few arguments");
+    throwIf(elems.size() < 3, "let: too few arguments");
 
     return switch (elems.get(1)) {
       // variable: (let vname expr)
       case SymbolExpr nameSym -> evalLetVariable(nameSym, elems.get(2), env);
       // function: (let (fname p1 p2 ...) body)
       case ListExpr fnSig -> evalLetFunction(fnSig, elems.get(2), env);
-      default ->
-          throw new RuntimeException(
-              "let: expected '(let vname expr)' or '(let (fname p1 p2 ...) body)'");
+      default -> throw error("let: expected '(let vname expr)' or '(let (fname p1 p2 ...) body)'");
     };
   }
 
@@ -112,15 +111,13 @@ public class Interpreter {
   private static ClosureFn evalLetFunction(ListExpr fnSig, Expr body, Env env) {
     // function: (let (fname p1 p2 ...) body)
     List<Expr> sigElems = fnSig.elements();
-    if (sigElems.isEmpty())
-      throw new RuntimeException("let: function signature expected (fname p1 p2 ...)");
+    throwIf(sigElems.isEmpty(), "let: function signature expected (fname p1 p2 ...)");
 
     // fname
     String fname =
         switch (sigElems.getFirst()) {
           case SymbolExpr(String name) -> name;
-          default ->
-              throw new RuntimeException("let: function name needs to be lispy.ast.SymbolExpr");
+          default -> throw error("let: function name needs to be lispy.ast.SymbolExpr");
         };
 
     // parameters
@@ -132,7 +129,7 @@ public class Interpreter {
                     switch (e) {
                       case SymbolExpr(String name) -> name;
                       default ->
-                          throw new RuntimeException(
+                          throw error(
                               "let: function parameters needs to be" + " lispy.ast.SymbolExpr");
                     })
             .toList();
@@ -145,7 +142,7 @@ public class Interpreter {
   }
 
   private static Value evalIf(List<Expr> elems, Env env) {
-    if (elems.size() < 3) throw new RuntimeException("expected '(if cond then [else])'");
+    throwIf(elems.size() < 3, "expected '(if cond then [else])'");
 
     Value res = new BoolVal(false);
     Expr cond = elems.get(1);
@@ -159,7 +156,7 @@ public class Interpreter {
   }
 
   private static Value evalWhile(List<Expr> elems, Env env) {
-    if (elems.size() < 2) throw new RuntimeException("expected '(while cond body)'");
+    throwIf(elems.size() < 2, "expected '(while cond body)'");
 
     Value res = new BoolVal(false);
     Expr cond = elems.get(1);
@@ -183,7 +180,7 @@ public class Interpreter {
     FnVal fn =
         switch (eval(headExpr, env)) {
           case FnVal f -> f;
-          default -> throw new RuntimeException("function expected: " + headExpr);
+          default -> throw error("function expected: " + headExpr);
         };
 
     // evaluate args in current env
