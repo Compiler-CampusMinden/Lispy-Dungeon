@@ -11,7 +11,7 @@ class InterpreterTest {
   @Test
   public void testNumber() {
     // given: 42
-    Program p = Program.of(new NumberLiteral(42));
+    Program p = Program.of(new Expr.NumberLiteral(42));
 
     // when
     Value res = Interpreter.eval(p);
@@ -23,7 +23,7 @@ class InterpreterTest {
   @Test
   public void testString() {
     // given: "wuppieFluppie"
-    Program p = Program.of(new StringLiteral("wuppieFluppie"));
+    Program p = Program.of(new Expr.StringLiteral("wuppieFluppie"));
 
     // when
     Value res = Interpreter.eval(p);
@@ -35,7 +35,7 @@ class InterpreterTest {
   @Test
   public void testBooleanTrue() {
     // given: true
-    Program p = Program.of(new BoolLiteral(true));
+    Program p = Program.of(new Expr.BoolLiteral(true));
 
     // when
     Value res = Interpreter.eval(p);
@@ -47,7 +47,7 @@ class InterpreterTest {
   @Test
   public void testBooleanFalse() {
     // given: false
-    Program p = Program.of(new BoolLiteral(false));
+    Program p = Program.of(new Expr.BoolLiteral(false));
 
     // when
     Value res = Interpreter.eval(p);
@@ -59,7 +59,7 @@ class InterpreterTest {
   @Test
   public void testSymbol() {
     // given: wuppie
-    Program p = Program.of(new SymbolExpr("wuppie"));
+    Program p = Program.of(new Expr.SymbolExpr("wuppie"));
 
     // when, then
     assertThrows(RuntimeException.class, () -> Interpreter.eval(p));
@@ -70,11 +70,11 @@ class InterpreterTest {
     // given: (list 42 7 "wuppie")
     Program p =
         Program.of(
-            ListExpr.of(
-                new SymbolExpr("list"),
-                new NumberLiteral(42),
-                new NumberLiteral(7),
-                new StringLiteral("wuppie")));
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("list"),
+                new Expr.NumberLiteral(42),
+                new Expr.NumberLiteral(7),
+                new Expr.StringLiteral("wuppie")));
 
     // when
     Value res = Interpreter.eval(p);
@@ -88,13 +88,13 @@ class InterpreterTest {
     // given: (head (list 42 7 "wuppie"))
     Program p =
         Program.of(
-            ListExpr.of(
-                new SymbolExpr("head"),
-                ListExpr.of(
-                    new SymbolExpr("list"),
-                    new NumberLiteral(42),
-                    new NumberLiteral(7),
-                    new StringLiteral("wuppie"))));
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("head"),
+                Expr.ListExpr.of(
+                    new Expr.SymbolExpr("list"),
+                    new Expr.NumberLiteral(42),
+                    new Expr.NumberLiteral(7),
+                    new Expr.StringLiteral("wuppie"))));
 
     // when
     Value res = Interpreter.eval(p);
@@ -108,13 +108,13 @@ class InterpreterTest {
     // given: (tail (list 42 7 "wuppie"))
     Program p =
         Program.of(
-            ListExpr.of(
-                new SymbolExpr("tail"),
-                ListExpr.of(
-                    new SymbolExpr("list"),
-                    new NumberLiteral(42),
-                    new NumberLiteral(7),
-                    new StringLiteral("wuppie"))));
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("tail"),
+                Expr.ListExpr.of(
+                    new Expr.SymbolExpr("list"),
+                    new Expr.NumberLiteral(42),
+                    new Expr.NumberLiteral(7),
+                    new Expr.StringLiteral("wuppie"))));
 
     // when
     Value res = Interpreter.eval(p);
@@ -128,16 +128,16 @@ class InterpreterTest {
     // given: (cons true (tail (list 42 7 "wuppie")))
     Program p =
         Program.of(
-            ListExpr.of(
-                new SymbolExpr("cons"),
-                new BoolLiteral(true),
-                ListExpr.of(
-                    new SymbolExpr("tail"),
-                    ListExpr.of(
-                        new SymbolExpr("list"),
-                        new NumberLiteral(42),
-                        new NumberLiteral(7),
-                        new StringLiteral("wuppie")))));
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("cons"),
+                new Expr.BoolLiteral(true),
+                Expr.ListExpr.of(
+                    new Expr.SymbolExpr("tail"),
+                    Expr.ListExpr.of(
+                        new Expr.SymbolExpr("list"),
+                        new Expr.NumberLiteral(42),
+                        new Expr.NumberLiteral(7),
+                        new Expr.StringLiteral("wuppie")))));
 
     // when
     Value res = Interpreter.eval(p);
@@ -151,11 +151,12 @@ class InterpreterTest {
     // given: (if (< 1 2) (print "true") (print "WUPPIE"))
     Program p =
         Program.of(
-            ListExpr.of(
-                new SymbolExpr("if"),
-                ListExpr.of(new SymbolExpr("<"), new NumberLiteral(1), new NumberLiteral(2)),
-                ListExpr.of(new SymbolExpr("print"), new StringLiteral("true")),
-                ListExpr.of(new SymbolExpr("print"), new StringLiteral("WUPPIE"))));
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("if"),
+                Expr.ListExpr.of(
+                    new Expr.SymbolExpr("<"), new Expr.NumberLiteral(1), new Expr.NumberLiteral(2)),
+                Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.StringLiteral("true")),
+                Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.StringLiteral("WUPPIE"))));
 
     // when
     Value res = Interpreter.eval(p);
@@ -169,11 +170,12 @@ class InterpreterTest {
     // given: (if (> 1 2) (print "true") (print "WUPPIE"))
     Program p =
         Program.of(
-            ListExpr.of(
-                new SymbolExpr("if"),
-                ListExpr.of(new SymbolExpr(">"), new NumberLiteral(1), new NumberLiteral(2)),
-                ListExpr.of(new SymbolExpr("print"), new StringLiteral("true")),
-                ListExpr.of(new SymbolExpr("print"), new StringLiteral("WUPPIE"))));
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("if"),
+                Expr.ListExpr.of(
+                    new Expr.SymbolExpr(">"), new Expr.NumberLiteral(1), new Expr.NumberLiteral(2)),
+                Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.StringLiteral("true")),
+                Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.StringLiteral("WUPPIE"))));
 
     // when
     Value res = Interpreter.eval(p);
@@ -187,8 +189,11 @@ class InterpreterTest {
     // given: (let wuppie 5) (print wuppie)
     Program p =
         Program.of(
-            ListExpr.of(new SymbolExpr("let"), new SymbolExpr("wuppie"), new NumberLiteral(5)),
-            ListExpr.of(new SymbolExpr("print"), new SymbolExpr("wuppie")));
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("let"),
+                new Expr.SymbolExpr("wuppie"),
+                new Expr.NumberLiteral(5)),
+            Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.SymbolExpr("wuppie")));
 
     // when
     Value res = Interpreter.eval(p);
@@ -202,18 +207,23 @@ class InterpreterTest {
     // given: (let wuppie 5) (let a 10) (let (foo a b) (print (+ a b wuppie)))
     Program p =
         Program.of(
-            ListExpr.of(new SymbolExpr("let"), new SymbolExpr("wuppie"), new NumberLiteral(5)),
-            ListExpr.of(new SymbolExpr("let"), new SymbolExpr("a"), new NumberLiteral(10)),
-            ListExpr.of(
-                new SymbolExpr("let"),
-                ListExpr.of(new SymbolExpr("foo"), new SymbolExpr("a"), new SymbolExpr("b")),
-                ListExpr.of(
-                    new SymbolExpr("print"),
-                    ListExpr.of(
-                        new SymbolExpr("+"),
-                        new SymbolExpr("a"),
-                        new SymbolExpr("b"),
-                        new SymbolExpr("wuppie")))));
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("let"),
+                new Expr.SymbolExpr("wuppie"),
+                new Expr.NumberLiteral(5)),
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("let"), new Expr.SymbolExpr("a"), new Expr.NumberLiteral(10)),
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("let"),
+                Expr.ListExpr.of(
+                    new Expr.SymbolExpr("foo"), new Expr.SymbolExpr("a"), new Expr.SymbolExpr("b")),
+                Expr.ListExpr.of(
+                    new Expr.SymbolExpr("print"),
+                    Expr.ListExpr.of(
+                        new Expr.SymbolExpr("+"),
+                        new Expr.SymbolExpr("a"),
+                        new Expr.SymbolExpr("b"),
+                        new Expr.SymbolExpr("wuppie")))));
 
     // when
     Value res = Interpreter.eval(p);
@@ -231,25 +241,33 @@ class InterpreterTest {
     // (print c) (print wuppie) (print a))
     Program p =
         Program.of(
-            ListExpr.of(new SymbolExpr("let"), new SymbolExpr("wuppie"), new NumberLiteral(5)),
-            ListExpr.of(new SymbolExpr("let"), new SymbolExpr("a"), new NumberLiteral(10)),
-            ListExpr.of(
-                new SymbolExpr("let"),
-                ListExpr.of(new SymbolExpr("foo"), new SymbolExpr("a"), new SymbolExpr("b")),
-                ListExpr.of(
-                    new SymbolExpr("print"),
-                    ListExpr.of(
-                        new SymbolExpr("+"),
-                        new SymbolExpr("a"),
-                        new SymbolExpr("b"),
-                        new SymbolExpr("wuppie")))),
-            ListExpr.of(
-                new SymbolExpr("let"),
-                new SymbolExpr("c"),
-                ListExpr.of(new SymbolExpr("foo"), new NumberLiteral(1), new NumberLiteral(100))),
-            ListExpr.of(new SymbolExpr("print"), new SymbolExpr("c")),
-            ListExpr.of(new SymbolExpr("print"), new SymbolExpr("wuppie")),
-            ListExpr.of(new SymbolExpr("print"), new SymbolExpr("a")));
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("let"),
+                new Expr.SymbolExpr("wuppie"),
+                new Expr.NumberLiteral(5)),
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("let"), new Expr.SymbolExpr("a"), new Expr.NumberLiteral(10)),
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("let"),
+                Expr.ListExpr.of(
+                    new Expr.SymbolExpr("foo"), new Expr.SymbolExpr("a"), new Expr.SymbolExpr("b")),
+                Expr.ListExpr.of(
+                    new Expr.SymbolExpr("print"),
+                    Expr.ListExpr.of(
+                        new Expr.SymbolExpr("+"),
+                        new Expr.SymbolExpr("a"),
+                        new Expr.SymbolExpr("b"),
+                        new Expr.SymbolExpr("wuppie")))),
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("let"),
+                new Expr.SymbolExpr("c"),
+                Expr.ListExpr.of(
+                    new Expr.SymbolExpr("foo"),
+                    new Expr.NumberLiteral(1),
+                    new Expr.NumberLiteral(100))),
+            Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.SymbolExpr("c")),
+            Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.SymbolExpr("wuppie")),
+            Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.SymbolExpr("a")));
 
     // when
     Value res = Interpreter.eval(p);
@@ -265,20 +283,21 @@ class InterpreterTest {
     // (let c (foo 1))
     Program p =
         Program.of(
-            ListExpr.of(
-                new SymbolExpr("let"),
-                ListExpr.of(new SymbolExpr("foo"), new SymbolExpr("a"), new SymbolExpr("b")),
-                ListExpr.of(
-                    new SymbolExpr("print"),
-                    ListExpr.of(
-                        new SymbolExpr("+"),
-                        new SymbolExpr("a"),
-                        new SymbolExpr("b"),
-                        new SymbolExpr("wuppie")))),
-            ListExpr.of(
-                new SymbolExpr("let"),
-                new SymbolExpr("c"),
-                ListExpr.of(new SymbolExpr("foo"), new NumberLiteral(1))));
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("let"),
+                Expr.ListExpr.of(
+                    new Expr.SymbolExpr("foo"), new Expr.SymbolExpr("a"), new Expr.SymbolExpr("b")),
+                Expr.ListExpr.of(
+                    new Expr.SymbolExpr("print"),
+                    Expr.ListExpr.of(
+                        new Expr.SymbolExpr("+"),
+                        new Expr.SymbolExpr("a"),
+                        new Expr.SymbolExpr("b"),
+                        new Expr.SymbolExpr("wuppie")))),
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("let"),
+                new Expr.SymbolExpr("c"),
+                Expr.ListExpr.of(new Expr.SymbolExpr("foo"), new Expr.NumberLiteral(1))));
 
     // when, then
     assertThrows(RuntimeException.class, () -> Interpreter.eval(p));
@@ -289,12 +308,12 @@ class InterpreterTest {
     // given: (+ 1 10 100 1000)
     Program p =
         Program.of(
-            ListExpr.of(
-                new SymbolExpr("+"),
-                new NumberLiteral(1),
-                new NumberLiteral(10),
-                new NumberLiteral(100),
-                new NumberLiteral(1000)));
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("+"),
+                new Expr.NumberLiteral(1),
+                new Expr.NumberLiteral(10),
+                new Expr.NumberLiteral(100),
+                new Expr.NumberLiteral(1000)));
 
     // when
     Value res = Interpreter.eval(p);
@@ -308,11 +327,11 @@ class InterpreterTest {
     // given: (- 100 10 1)
     Program p =
         Program.of(
-            ListExpr.of(
-                new SymbolExpr("-"),
-                new NumberLiteral(100),
-                new NumberLiteral(10),
-                new NumberLiteral(1)));
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("-"),
+                new Expr.NumberLiteral(100),
+                new Expr.NumberLiteral(10),
+                new Expr.NumberLiteral(1)));
 
     // when
     Value res = Interpreter.eval(p);
@@ -326,11 +345,11 @@ class InterpreterTest {
     // given: (* 100 10 2)
     Program p =
         Program.of(
-            ListExpr.of(
-                new SymbolExpr("*"),
-                new NumberLiteral(100),
-                new NumberLiteral(10),
-                new NumberLiteral(2)));
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("*"),
+                new Expr.NumberLiteral(100),
+                new Expr.NumberLiteral(10),
+                new Expr.NumberLiteral(2)));
 
     // when
     Value res = Interpreter.eval(p);
@@ -344,11 +363,11 @@ class InterpreterTest {
     // given: (/ 100 10 2)
     Program p =
         Program.of(
-            ListExpr.of(
-                new SymbolExpr("/"),
-                new NumberLiteral(100),
-                new NumberLiteral(10),
-                new NumberLiteral(2)));
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("/"),
+                new Expr.NumberLiteral(100),
+                new Expr.NumberLiteral(10),
+                new Expr.NumberLiteral(2)));
 
     // when
     Value res = Interpreter.eval(p);
@@ -362,21 +381,26 @@ class InterpreterTest {
     // given: (let (fac n) (if (< n 2) 1 (* n (fac (- n 1))))) (fac 5)
     Program p =
         Program.of(
-            ListExpr.of(
-                new SymbolExpr("let"),
-                ListExpr.of(new SymbolExpr("fac"), new SymbolExpr("n")),
-                ListExpr.of(
-                    new SymbolExpr("if"),
-                    ListExpr.of(new SymbolExpr("<"), new SymbolExpr("n"), new NumberLiteral(2)),
-                    new NumberLiteral(1),
-                    ListExpr.of(
-                        new SymbolExpr("*"),
-                        new SymbolExpr("n"),
-                        ListExpr.of(
-                            new SymbolExpr("fac"),
-                            ListExpr.of(
-                                new SymbolExpr("-"), new SymbolExpr("n"), new NumberLiteral(1)))))),
-            ListExpr.of(new SymbolExpr("fac"), new NumberLiteral(5)));
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("let"),
+                Expr.ListExpr.of(new Expr.SymbolExpr("fac"), new Expr.SymbolExpr("n")),
+                Expr.ListExpr.of(
+                    new Expr.SymbolExpr("if"),
+                    Expr.ListExpr.of(
+                        new Expr.SymbolExpr("<"),
+                        new Expr.SymbolExpr("n"),
+                        new Expr.NumberLiteral(2)),
+                    new Expr.NumberLiteral(1),
+                    Expr.ListExpr.of(
+                        new Expr.SymbolExpr("*"),
+                        new Expr.SymbolExpr("n"),
+                        Expr.ListExpr.of(
+                            new Expr.SymbolExpr("fac"),
+                            Expr.ListExpr.of(
+                                new Expr.SymbolExpr("-"),
+                                new Expr.SymbolExpr("n"),
+                                new Expr.NumberLiteral(1)))))),
+            Expr.ListExpr.of(new Expr.SymbolExpr("fac"), new Expr.NumberLiteral(5)));
 
     // when
     Value res = Interpreter.eval(p);

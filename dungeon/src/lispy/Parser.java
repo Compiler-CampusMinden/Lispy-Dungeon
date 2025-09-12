@@ -65,27 +65,27 @@ public class Parser {
 
   private Expr number() {
     Token t = match(NUMBER);
-    return new NumberLiteral(Integer.parseInt(t.lexeme()));
+    return new Expr.NumberLiteral(Integer.parseInt(t.lexeme()));
   }
 
   private Expr string() {
     Token t = match(STRING);
-    return new StringLiteral(t.lexeme());
+    return new Expr.StringLiteral(t.lexeme());
   }
 
   private Expr boolTrue() {
     match(TRUE);
-    return new BoolLiteral(true);
+    return new Expr.BoolLiteral(true);
   }
 
   private Expr boolFalse() {
     match(FALSE);
-    return new BoolLiteral(false);
+    return new Expr.BoolLiteral(false);
   }
 
   private Expr symbol() {
     Token t = match(ID);
-    return new SymbolExpr(t.lexeme());
+    return new Expr.SymbolExpr(t.lexeme());
   }
 
   private Expr list() {
@@ -95,7 +95,7 @@ public class Parser {
 
     switch (lookahead.type()) {
       case ID, OP -> {
-        elements.add(new SymbolExpr(lookahead.lexeme()));
+        elements.add(new Expr.SymbolExpr(lookahead.lexeme()));
         consume();
       }
       default -> throw error("ID or OP expected, got " + lookahead);
@@ -106,7 +106,7 @@ public class Parser {
     }
 
     match(RPAREN);
-    return new ListExpr(elements);
+    return new Expr.ListExpr(elements);
   }
 
   private static boolean isExprStart(TokenType t) {

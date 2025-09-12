@@ -55,25 +55,25 @@ public class Interpreter {
    */
   public static Value eval(Expr expr, Env env) {
     return switch (expr) {
-      case NumberLiteral n -> new NumVal(n.value());
-      case StringLiteral s -> new StrVal(s.value());
-      case BoolLiteral b -> new BoolVal(b.value());
-      case SymbolExpr s -> env.get(s.name());
-      case ListExpr list -> evalList(list, env);
+      case Expr.NumberLiteral n -> new NumVal(n.value());
+      case Expr.StringLiteral s -> new StrVal(s.value());
+      case Expr.BoolLiteral b -> new BoolVal(b.value());
+      case Expr.SymbolExpr s -> env.get(s.name());
+      case Expr.ListExpr list -> evalList(list, env);
     };
   }
 
-  private static Value evalList(ListExpr list, Env env) {
+  private static Value evalList(Expr.ListExpr list, Env env) {
     List<Expr> elems = list.elements();
     throwIf(elems.isEmpty(), "cannot evaluate empty list");
 
     return switch (elems.getFirst()) {
-      case SymbolExpr s -> evalList(s, list, env);
+      case Expr.SymbolExpr s -> evalList(s, list, env);
       default -> throw error("first element must be a symbol or op, got" + elems.getFirst());
     };
   }
 
-  private static Value evalList(SymbolExpr headExpr, ListExpr list, Env env) {
+  private static Value evalList(Expr.SymbolExpr headExpr, Expr.ListExpr list, Env env) {
     List<Expr> elems = list.elements();
     throwIf(elems.isEmpty(), "cannot evaluate empty list");
 
@@ -92,14 +92,14 @@ public class Interpreter {
 
     return switch (elems.get(1)) {
       // variable: (let vname expr)
-      case SymbolExpr nameSym -> evalLetVariable(nameSym, elems.get(2), env);
+      case Expr.SymbolExpr nameSym -> evalLetVariable(nameSym, elems.get(2), env);
       // function: (let (fname p1 p2 ...) body)
-      case ListExpr fnSig -> evalLetFunction(fnSig, elems.get(2), env);
+      case Expr.ListExpr fnSig -> evalLetFunction(fnSig, elems.get(2), env);
       default -> throw error("let: expected '(let vname expr)' or '(let (fname p1 p2 ...) body)'");
     };
   }
 
-  private static Value evalLetVariable(SymbolExpr nameSym, Expr expr, Env env) {
+  private static Value evalLetVariable(Expr.SymbolExpr nameSym, Expr expr, Env env) {
     // variable: (let vname expr)
     String vname = nameSym.name();
     Value val = eval(expr, env);
@@ -108,7 +108,7 @@ public class Interpreter {
     return val;
   }
 
-  private static ClosureFn evalLetFunction(ListExpr fnSig, Expr body, Env env) {
+  private static ClosureFn evalLetFunction(Expr.ListExpr fnSig, Expr body, Env env) {
     // function: (let (fname p1 p2 ...) body)
     List<Expr> sigElems = fnSig.elements();
     throwIf(sigElems.isEmpty(), "let: function signature expected (fname p1 p2 ...)");
@@ -116,8 +116,8 @@ public class Interpreter {
     // fname
     String fname =
         switch (sigElems.getFirst()) {
-          case SymbolExpr(String name) -> name;
-          default -> throw error("let: function name needs to be lispy.ast.SymbolExpr");
+          case Expr.SymbolExpr(String name) -> name;
+          default -> throw error("let: function name needs to be lispy.ast.Expr.SymbolExpr");
         };
 
     // parameters
@@ -127,10 +127,11 @@ public class Interpreter {
             .map(
                 e ->
                     switch (e) {
-                      case SymbolExpr(String name) -> name;
+                      case Expr.SymbolExpr(String name) -> name;
                       default ->
                           throw error(
-                              "let: function parameters needs to be" + " lispy.ast.SymbolExpr");
+                              "let: function parameters needs to be"
+                                  + " lispy.ast.Expr.SymbolExpr");
                     })
             .toList();
 
@@ -147,7 +148,7 @@ public class Interpreter {
     Value res = new BoolVal(false);
     Expr cond = elems.get(1);
     Expr thenexpr = elems.get(2);
-    Expr elseexpr = (elems.size() >= 4) ? elems.get(3) : new BoolLiteral(false);
+    Expr elseexpr = (elems.size() >= 4) ? elems.get(3) : new Expr.BoolLiteral(false);
 
     if (Value.isTruthy(eval(cond, env))) res = eval(thenexpr, env);
     else if (elems.size() >= 4) res = eval(elseexpr, env);
@@ -175,7 +176,7 @@ public class Interpreter {
     return new BoolVal(elems.stream().skip(1).map(e -> eval(e, env)).anyMatch(Value::isTruthy));
   }
 
-  private static Value evalFn(SymbolExpr headExpr, List<Expr> elems, Env env) {
+  private static Value evalFn(Expr.SymbolExpr headExpr, List<Expr> elems, Env env) {
     // evaluate function name in current env
     FnVal fn =
         switch (eval(headExpr, env)) {

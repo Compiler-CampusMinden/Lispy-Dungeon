@@ -11,7 +11,7 @@ class ParserTest {
   @Test
   public void testNumber() {
     // given
-    Program res = Program.of(new NumberLiteral(42));
+    Program res = Program.of(new Expr.NumberLiteral(42));
 
     // when
     Program p = Parser.parseString(" 42 ");
@@ -23,7 +23,7 @@ class ParserTest {
   @Test
   public void testString() {
     // given
-    Program res = Program.of(new StringLiteral("wuppieFluppie"));
+    Program res = Program.of(new Expr.StringLiteral("wuppieFluppie"));
 
     // when
     Program p = Parser.parseString(" \"wuppieFluppie\" ");
@@ -35,7 +35,7 @@ class ParserTest {
   @Test
   public void testBooleanTrue() {
     // given
-    Program res = Program.of(new BoolLiteral(true));
+    Program res = Program.of(new Expr.BoolLiteral(true));
 
     // when
     Program p = Parser.parseString(" true ");
@@ -47,7 +47,7 @@ class ParserTest {
   @Test
   public void testBooleanFalse() {
     // given
-    Program res = Program.of(new BoolLiteral(false));
+    Program res = Program.of(new Expr.BoolLiteral(false));
 
     // when
     Program p = Parser.parseString(" false ");
@@ -59,7 +59,7 @@ class ParserTest {
   @Test
   public void testSymbol() {
     // given
-    Program res = Program.of(new SymbolExpr("wuppie"));
+    Program res = Program.of(new Expr.SymbolExpr("wuppie"));
 
     // when
     Program p = Parser.parseString(" wuppie ");
@@ -71,7 +71,8 @@ class ParserTest {
   @Test
   public void testListID() {
     // given
-    Program res = Program.of(ListExpr.of(new SymbolExpr("wuppie"), new NumberLiteral(42)));
+    Program res =
+        Program.of(Expr.ListExpr.of(new Expr.SymbolExpr("wuppie"), new Expr.NumberLiteral(42)));
 
     // when
     Program p = Parser.parseString(" (wuppie, 42 ) ");
@@ -84,7 +85,9 @@ class ParserTest {
   public void testListOP() {
     // given
     Program res =
-        Program.of(ListExpr.of(new SymbolExpr("+"), new NumberLiteral(42), new NumberLiteral(7)));
+        Program.of(
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("+"), new Expr.NumberLiteral(42), new Expr.NumberLiteral(7)));
 
     // when
     Program p = Parser.parseString(" (+ 42 7) ");
@@ -106,14 +109,16 @@ class ParserTest {
     // given
     Program res =
         Program.of(
-            ListExpr.of(
-                new SymbolExpr("if"),
-                ListExpr.of(new SymbolExpr("<"), new NumberLiteral(1), new NumberLiteral(2)),
-                ListExpr.of(
-                    new SymbolExpr("do"),
-                    ListExpr.of(new SymbolExpr("print"), new StringLiteral("true")),
-                    ListExpr.of(new SymbolExpr("print"), new StringLiteral("WUPPIE"))),
-                ListExpr.of(new SymbolExpr("print"), new BoolLiteral(false))));
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("if"),
+                Expr.ListExpr.of(
+                    new Expr.SymbolExpr("<"), new Expr.NumberLiteral(1), new Expr.NumberLiteral(2)),
+                Expr.ListExpr.of(
+                    new Expr.SymbolExpr("do"),
+                    Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.StringLiteral("true")),
+                    Expr.ListExpr.of(
+                        new Expr.SymbolExpr("print"), new Expr.StringLiteral("WUPPIE"))),
+                Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.BoolLiteral(false))));
 
     // when
     Program p =
