@@ -1,6 +1,7 @@
 package lispy;
 
 import static lispy.Error.error;
+import static lispy.token.TokenType.*;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -44,7 +45,7 @@ public class Parser {
 
   private Program parseProgram() {
     List<Expr> exprs = new ArrayList<>();
-    while (lookahead.type() != TokenType.EOF) {
+    while (lookahead.type() != EOF) {
       exprs.add(parseExpr());
     }
     return new Program(exprs);
@@ -63,32 +64,32 @@ public class Parser {
   }
 
   private Expr parseNumber() {
-    Token t = match(TokenType.NUMBER);
+    Token t = match(NUMBER);
     return new NumberLiteral(Integer.parseInt(t.lexeme()));
   }
 
   private Expr parseString() {
-    Token t = match(TokenType.STRING);
+    Token t = match(STRING);
     return new StringLiteral(t.lexeme());
   }
 
   private Expr parseTrue() {
-    match(TokenType.TRUE);
+    match(TRUE);
     return new BoolLiteral(true);
   }
 
   private Expr parseFalse() {
-    match(TokenType.FALSE);
+    match(FALSE);
     return new BoolLiteral(false);
   }
 
   private Expr parseSymbol() {
-    Token t = match(TokenType.ID);
+    Token t = match(ID);
     return new SymbolExpr(t.lexeme());
   }
 
   private Expr parseList() {
-    match(TokenType.LPAREN);
+    match(LPAREN);
 
     List<Expr> elements = new ArrayList<>();
 
@@ -104,7 +105,7 @@ public class Parser {
       elements.add(parseExpr());
     }
 
-    match(TokenType.RPAREN);
+    match(RPAREN);
     return new ListExpr(elements);
   }
 
@@ -120,11 +121,11 @@ public class Parser {
   }
 
   private Token match(TokenType expected) {
-    if (lookahead.type() == expected) {
-      Token t = lookahead;
-      consume();
-      return t;
-    }
-    throw error("expected: " + expected + ", found: " + lookahead);
+    if (lookahead.type() != expected)
+      throw error("expected: " + expected + ", found: " + lookahead);
+
+    Token t = lookahead;
+    consume();
+    return t;
   }
 }
