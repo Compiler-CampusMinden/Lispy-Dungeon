@@ -217,9 +217,7 @@ public sealed interface Value
               + args.size());
 
       Env callenv = new Env(closureEnv);
-      for (int i = 0; i < params.size(); i++) {
-        callenv.define(params.get(i), args.get(i));
-      }
+      IntStream.range(0, params.size()).forEach(i -> callenv.define(params.get(i), args.get(i)));
       return Interpreter.eval(body, callenv);
     }
   }
