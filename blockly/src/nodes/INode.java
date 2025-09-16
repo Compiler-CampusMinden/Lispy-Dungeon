@@ -8,7 +8,7 @@ public abstract class INode {
   /**
    * Create a new node with the given type.
    *
-   * @param type TokenType of the node.
+   * @param type Type of the node.
    */
   public INode(String type) {
     this.type = type;
