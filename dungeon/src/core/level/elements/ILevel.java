@@ -160,7 +160,7 @@ public interface ILevel extends IndexedGraph<Tile> {
    * random tile of that type from the corresponding list in the level. If the list for the
    * specified type is empty, the method returns null.
    *
-   * @param elementType TokenType of the tile to retrieve.
+   * @param elementType Type of the tile to retrieve.
    * @return A random tile of the specified type, or empty if the list for that type is empty.
    */
   default Optional<Tile> randomTile(final LevelElement elementType) {
