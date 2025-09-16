@@ -626,7 +626,7 @@ public final class Game {
   /**
    * Get the position of a random Tile as Point.
    *
-   * @param elementTyp TokenType of the Tile.
+   * @param elementTyp Type of the Tile.
    * @return Position of the Tile as Point or an empty Optional if there is no tile of that type.
    */
   public static Optional<Point> randomTilePoint(final LevelElement elementTyp) {
