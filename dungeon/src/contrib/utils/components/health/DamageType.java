@@ -1,6 +1,6 @@
 package contrib.utils.components.health;
 
-/** TokenType of damage to include resistances and vulnerabilities in the damage calculation. */
+/** Type of damage to include resistances and vulnerabilities in the damage calculation. */
 public enum DamageType {
   /** Damage dealt by physical attacks, such as swords or arrows. */
   PHYSICAL,
