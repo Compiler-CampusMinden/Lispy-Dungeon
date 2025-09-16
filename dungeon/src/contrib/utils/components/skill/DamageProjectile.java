@@ -169,7 +169,7 @@ public abstract class DamageProjectile implements Consumer<Entity> {
    * @param pathToTexturesOfProjectile Path to the textures of the projectile.
    * @param projectileSpeed Speed of the projectile.
    * @param damageAmount Amount of damage to be dealt.
-   * @param damageType TokenType of damage to be dealt.
+   * @param damageType Type of damage to be dealt.
    * @param projectileHitBoxSize Size of the hit box.
    * @param selectionFunction Specific functionality of the projectile.
    * @param projectileRange Range in which the projectile is effective.
