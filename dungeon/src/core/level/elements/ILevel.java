@@ -369,7 +369,7 @@ public interface ILevel extends IndexedGraph<Tile> {
    * <p>The method internally calls {@link #randomTile(LevelElement)} to obtain a random tile of the
    * specified type and then retrieves its position.
    *
-   * @param elementType TokenType of the tile for which to retrieve the position.
+   * @param elementType Type of the tile for which to retrieve the position.
    * @return The position of a randomly selected tile of the specified type in the level as a {@link
    *     Point}.
    */
