@@ -26,7 +26,7 @@ import task.tasktype.quizquestion.SingleChoice;
  * <p>The Functions will find the given answers to a task in the game.
  *
  * <p>Note that it is important to choose the correct function. The correct function varies based on
- * the Task-TokenType and the game scenario.
+ * the Task-Type and the game scenario.
  */
 public class AnswerPickingFunctions {
 
