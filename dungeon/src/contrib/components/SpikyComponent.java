@@ -59,7 +59,7 @@ public final class SpikyComponent implements Component {
   }
 
   /**
-   * TokenType of damage to cause.
+   * Type of damage to cause.
    *
    * @return the type of damage.
    */
