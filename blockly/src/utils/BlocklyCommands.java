@@ -294,7 +294,7 @@ public class BlocklyCommands {
   /**
    * Check if the next tile in the given direction is an {@link LevelElement} Type Tile.
    *
-   * @param tileElement Tile TokenType to check for.
+   * @param tileElement Tile Type to check for.
    * @param direction Direction to check
    * @return Returns true if the hero is null or a tile of the given type was detected. Otherwise,
    *     returns false.
