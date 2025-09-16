@@ -607,7 +607,7 @@ public final class Game {
   /**
    * Get a random tile of the given type.
    *
-   * @param elementType TokenType of the tile.
+   * @param elementType Type of the tile.
    * @return A random tile of the given type or an empty Optional if there is no tile of that type.
    */
   public static Optional<Tile> randomTile(final LevelElement elementType) {
