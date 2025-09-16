@@ -110,7 +110,7 @@ public class PetriNetFactory {
         break;
       default:
         throw new RuntimeException(
-            "Unsported Edge-TokenType in TaskDepencyGraph. Can not convert into Petri-Net.");
+            "Unsported Edge-Type in TaskDepencyGraph. Can not convert into Petri-Net.");
     }
   }
 
