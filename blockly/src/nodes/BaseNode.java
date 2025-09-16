@@ -2,7 +2,7 @@ package nodes;
 
 /** This class holds a base value. A base value can either be a boolean or an integer. */
 public class BaseNode extends INode {
-  /** TokenType of the base node. Can either be boolean or integer. */
+  /** Type of the base node. Can either be boolean or integer. */
   public Types baseType;
 
   /** Boolean value of the node. */
