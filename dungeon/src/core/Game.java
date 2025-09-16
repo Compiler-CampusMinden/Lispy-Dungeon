@@ -666,7 +666,7 @@ public final class Game {
   /**
    * Get all tiles of the specified type from the current level.
    *
-   * @param elementTyp TokenType of the tiles to retrieve.
+   * @param elementTyp Type of the tiles to retrieve.
    * @return A Set containing all tiles of the specified type in the current level.
    */
   public static Set<Tile> allTiles(final LevelElement elementTyp) {
