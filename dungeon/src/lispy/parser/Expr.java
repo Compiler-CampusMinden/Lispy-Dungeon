@@ -42,15 +42,5 @@ public sealed interface Expr
    *
    * @param elements expressions
    */
-  record ListExpr(List<Expr> elements) implements Expr {
-    /**
-     * create a new list expression.
-     *
-     * @param elements expressions
-     * @return list expression
-     */
-    public static ListExpr of(Expr... elements) {
-      return new ListExpr(List.of(elements));
-    }
-  }
+  record ListExpr(List<Expr> elements) implements Expr {}
 }

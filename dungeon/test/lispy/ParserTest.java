@@ -72,7 +72,8 @@ class ParserTest {
   public void testListID() {
     // given
     List<Expr> res =
-        List.of(Expr.ListExpr.of(new Expr.SymbolExpr("wuppie"), new Expr.NumberLiteral(42)));
+        List.of(
+            new Expr.ListExpr(List.of(new Expr.SymbolExpr("wuppie"), new Expr.NumberLiteral(42))));
 
     // when
     List<Expr> p = Parser.parseString(" (wuppie, 42 ) ");
@@ -86,8 +87,11 @@ class ParserTest {
     // given
     List<Expr> res =
         List.of(
-            Expr.ListExpr.of(
-                new Expr.SymbolExpr("+"), new Expr.NumberLiteral(42), new Expr.NumberLiteral(7)));
+            new Expr.ListExpr(
+                List.of(
+                    new Expr.SymbolExpr("+"),
+                    new Expr.NumberLiteral(42),
+                    new Expr.NumberLiteral(7))));
 
     // when
     List<Expr> p = Parser.parseString(" (+ 42 7) ");
@@ -107,16 +111,26 @@ class ParserTest {
     // given
     List<Expr> res =
         List.of(
-            Expr.ListExpr.of(
-                new Expr.SymbolExpr("if"),
-                Expr.ListExpr.of(
-                    new Expr.SymbolExpr("<"), new Expr.NumberLiteral(1), new Expr.NumberLiteral(2)),
-                Expr.ListExpr.of(
-                    new Expr.SymbolExpr("do"),
-                    Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.StringLiteral("true")),
-                    Expr.ListExpr.of(
-                        new Expr.SymbolExpr("print"), new Expr.StringLiteral("WUPPIE"))),
-                Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.BoolLiteral(false))));
+            new Expr.ListExpr(
+                List.of(
+                    new Expr.SymbolExpr("if"),
+                    new Expr.ListExpr(
+                        List.of(
+                            new Expr.SymbolExpr("<"),
+                            new Expr.NumberLiteral(1),
+                            new Expr.NumberLiteral(2))),
+                    new Expr.ListExpr(
+                        List.of(
+                            new Expr.SymbolExpr("do"),
+                            new Expr.ListExpr(
+                                List.of(
+                                    new Expr.SymbolExpr("print"), new Expr.StringLiteral("true"))),
+                            new Expr.ListExpr(
+                                List.of(
+                                    new Expr.SymbolExpr("print"),
+                                    new Expr.StringLiteral("WUPPIE"))))),
+                    new Expr.ListExpr(
+                        List.of(new Expr.SymbolExpr("print"), new Expr.BoolLiteral(false))))));
 
     // when
     List<Expr> p =
