@@ -1,6 +1,6 @@
 package lispy.parser;
 
-import static lispy.lexer.TokenType.*;
+import static lispy.lexer.Token.TokenType.*;
 import static lispy.utils.Error.error;
 
 import java.io.IOException;
@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import lispy.lexer.Lexer;
 import lispy.lexer.Token;
-import lispy.lexer.TokenType;
 
 /** LL(1) parser (recursive descent). */
 public class Parser {
@@ -109,7 +108,7 @@ public class Parser {
     return new Expr.ListExpr(elements);
   }
 
-  private static boolean isExprStart(TokenType t) {
+  private static boolean isExprStart(Token.TokenType t) {
     return switch (t) {
       case NUMBER, STRING, TRUE, FALSE, ID, LPAREN -> true;
       default -> false;
@@ -120,7 +119,7 @@ public class Parser {
     lookahead = lexer.nextToken();
   }
 
-  private Token match(TokenType expected) {
+  private Token match(Token.TokenType expected) {
     if (lookahead.type() != expected)
       throw error("expected: " + expected + ", found: " + lookahead);
 

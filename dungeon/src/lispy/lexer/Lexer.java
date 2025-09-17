@@ -1,6 +1,6 @@
 package lispy.lexer;
 
-import static lispy.lexer.TokenType.*;
+import static lispy.lexer.Token.TokenType.*;
 import static lispy.utils.Error.*;
 
 import java.io.IOException;

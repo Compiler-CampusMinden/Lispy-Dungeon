@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lispy.lexer.Lexer;
 import lispy.lexer.Token;
-import lispy.lexer.TokenType;
 import org.junit.jupiter.api.Test;
 
 class LexerTest {
@@ -21,7 +20,7 @@ class LexerTest {
     Token t = l.nextToken();
 
     // then
-    assertEquals(Token.of(TokenType.LPAREN, "("), t);
+    assertEquals(Token.of(Token.TokenType.LPAREN, "("), t);
   }
 
   @Test
@@ -33,7 +32,7 @@ class LexerTest {
     Token t = l.nextToken();
 
     // then
-    assertEquals(Token.of(TokenType.RPAREN, ")"), t);
+    assertEquals(Token.of(Token.TokenType.RPAREN, ")"), t);
   }
 
   @Test
@@ -45,7 +44,7 @@ class LexerTest {
     Token t = l.nextToken();
 
     // then
-    assertEquals(Token.of(TokenType.TRUE, "true"), t);
+    assertEquals(Token.of(Token.TokenType.TRUE, "true"), t);
   }
 
   @Test
@@ -57,7 +56,7 @@ class LexerTest {
     Token t = l.nextToken();
 
     // then
-    assertEquals(Token.of(TokenType.FALSE, "false"), t);
+    assertEquals(Token.of(Token.TokenType.FALSE, "false"), t);
   }
 
   @Test
@@ -69,7 +68,7 @@ class LexerTest {
     Token t = l.nextToken();
 
     // then
-    assertEquals(Token.of(TokenType.ID, "foBaa2poo"), t);
+    assertEquals(Token.of(Token.TokenType.ID, "foBaa2poo"), t);
   }
 
   @Test
@@ -81,7 +80,7 @@ class LexerTest {
     Token t = l.nextToken();
 
     // then
-    assertEquals(Token.of(TokenType.NUMBER, "12345"), t);
+    assertEquals(Token.of(Token.TokenType.NUMBER, "12345"), t);
   }
 
   @Test
@@ -93,7 +92,7 @@ class LexerTest {
     Token t = l.nextToken();
 
     // then
-    assertEquals(Token.of(TokenType.OP, "+"), t);
+    assertEquals(Token.of(Token.TokenType.OP, "+"), t);
   }
 
   @Test
@@ -105,7 +104,7 @@ class LexerTest {
     Token t = l.nextToken();
 
     // then
-    assertEquals(Token.of(TokenType.OP, "-"), t);
+    assertEquals(Token.of(Token.TokenType.OP, "-"), t);
   }
 
   @Test
@@ -117,7 +116,7 @@ class LexerTest {
     Token t = l.nextToken();
 
     // then
-    assertEquals(Token.of(TokenType.OP, "*"), t);
+    assertEquals(Token.of(Token.TokenType.OP, "*"), t);
   }
 
   @Test
@@ -129,7 +128,7 @@ class LexerTest {
     Token t = l.nextToken();
 
     // then
-    assertEquals(Token.of(TokenType.OP, "/"), t);
+    assertEquals(Token.of(Token.TokenType.OP, "/"), t);
   }
 
   @Test
@@ -141,7 +140,7 @@ class LexerTest {
     Token t = l.nextToken();
 
     // then
-    assertEquals(Token.of(TokenType.OP, "="), t);
+    assertEquals(Token.of(Token.TokenType.OP, "="), t);
   }
 
   @Test
@@ -153,7 +152,7 @@ class LexerTest {
     Token t = l.nextToken();
 
     // then
-    assertEquals(Token.of(TokenType.OP, ">"), t);
+    assertEquals(Token.of(Token.TokenType.OP, ">"), t);
   }
 
   @Test
@@ -165,7 +164,7 @@ class LexerTest {
     Token t = l.nextToken();
 
     // then
-    assertEquals(Token.of(TokenType.OP, "<"), t);
+    assertEquals(Token.of(Token.TokenType.OP, "<"), t);
   }
 
   @Test
@@ -177,7 +176,7 @@ class LexerTest {
     Token t = l.nextToken();
 
     // then
-    assertEquals(Token.of(TokenType.STRING, " foo bar wuppie fluppie  "), t);
+    assertEquals(Token.of(Token.TokenType.STRING, " foo bar wuppie fluppie  "), t);
   }
 
   @Test
@@ -199,8 +198,8 @@ class LexerTest {
     Token t2 = l.nextToken();
 
     // then
-    assertEquals(Token.of(TokenType.OP, "<"), t1);
-    assertEquals(TokenType.EOF, t2.type());
+    assertEquals(Token.of(Token.TokenType.OP, "<"), t1);
+    assertEquals(Token.TokenType.EOF, t2.type());
   }
 
   @Test
@@ -211,7 +210,7 @@ class LexerTest {
     // when
     List<Token> tokactual = new ArrayList<>();
     Token t = l.nextToken();
-    while (t.type() != TokenType.EOF) {
+    while (t.type() != Token.TokenType.EOF) {
       tokactual.add(t);
       t = l.nextToken();
     }
@@ -219,29 +218,29 @@ class LexerTest {
     // then
     List<Token> tokexpected =
         List.of(
-            Token.of(TokenType.LPAREN, "("),
-            Token.of(TokenType.ID, "if"),
-            Token.of(TokenType.LPAREN, "("),
-            Token.of(TokenType.OP, "<"),
-            Token.of(TokenType.NUMBER, "1"),
-            Token.of(TokenType.NUMBER, "2"),
-            Token.of(TokenType.RPAREN, ")"),
-            Token.of(TokenType.LPAREN, "("),
-            Token.of(TokenType.ID, "do"),
-            Token.of(TokenType.LPAREN, "("),
-            Token.of(TokenType.ID, "print"),
-            Token.of(TokenType.STRING, "true"),
-            Token.of(TokenType.RPAREN, ")"),
-            Token.of(TokenType.LPAREN, "("),
-            Token.of(TokenType.ID, "print"),
-            Token.of(TokenType.STRING, "WUPPIE"),
-            Token.of(TokenType.RPAREN, ")"),
-            Token.of(TokenType.RPAREN, ")"),
-            Token.of(TokenType.LPAREN, "("),
-            Token.of(TokenType.ID, "print"),
-            Token.of(TokenType.STRING, "false"),
-            Token.of(TokenType.RPAREN, ")"),
-            Token.of(TokenType.RPAREN, ")"));
+            Token.of(Token.TokenType.LPAREN, "("),
+            Token.of(Token.TokenType.ID, "if"),
+            Token.of(Token.TokenType.LPAREN, "("),
+            Token.of(Token.TokenType.OP, "<"),
+            Token.of(Token.TokenType.NUMBER, "1"),
+            Token.of(Token.TokenType.NUMBER, "2"),
+            Token.of(Token.TokenType.RPAREN, ")"),
+            Token.of(Token.TokenType.LPAREN, "("),
+            Token.of(Token.TokenType.ID, "do"),
+            Token.of(Token.TokenType.LPAREN, "("),
+            Token.of(Token.TokenType.ID, "print"),
+            Token.of(Token.TokenType.STRING, "true"),
+            Token.of(Token.TokenType.RPAREN, ")"),
+            Token.of(Token.TokenType.LPAREN, "("),
+            Token.of(Token.TokenType.ID, "print"),
+            Token.of(Token.TokenType.STRING, "WUPPIE"),
+            Token.of(Token.TokenType.RPAREN, ")"),
+            Token.of(Token.TokenType.RPAREN, ")"),
+            Token.of(Token.TokenType.LPAREN, "("),
+            Token.of(Token.TokenType.ID, "print"),
+            Token.of(Token.TokenType.STRING, "false"),
+            Token.of(Token.TokenType.RPAREN, ")"),
+            Token.of(Token.TokenType.RPAREN, ")"));
 
     assertEquals(tokexpected, tokactual);
   }
