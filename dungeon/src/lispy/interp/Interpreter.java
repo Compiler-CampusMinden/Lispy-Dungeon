@@ -24,16 +24,6 @@ public class Interpreter {
   }
 
   /**
-   * Evaluate a program.
-   *
-   * @param program ast to evaluate
-   * @return result of evaluation
-   */
-  public static Value eval(Program program) {
-    return eval(program, newGlobalEnv());
-  }
-
-  /**
    * Evaluate a program in a given environment.
    *
    * @param program ast to evaluate
@@ -47,7 +37,7 @@ public class Interpreter {
   }
 
   /**
-   * main interpreter dispatch.
+   * Evaluate an Expression in a given environment (main interpreter dispatch).
    *
    * @param expr ast to evaluate
    * @param env environment to evaluate in

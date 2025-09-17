@@ -2,6 +2,7 @@ package lispy;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import lispy.interp.Env;
 import lispy.interp.Interpreter;
 import lispy.interp.Value;
 import lispy.parser.*;
@@ -13,9 +14,10 @@ class InterpreterTest {
   public void testNumber() {
     // given: 42
     Program p = Program.of(new Expr.NumberLiteral(42));
+    Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p);
+    Value res = Interpreter.eval(p, e);
 
     // then
     assertEquals("42", Value.pretty(res));
@@ -25,9 +27,10 @@ class InterpreterTest {
   public void testString() {
     // given: "wuppieFluppie"
     Program p = Program.of(new Expr.StringLiteral("wuppieFluppie"));
+    Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p);
+    Value res = Interpreter.eval(p, e);
 
     // then
     assertEquals("\"wuppieFluppie\"", Value.pretty(res));
@@ -37,9 +40,10 @@ class InterpreterTest {
   public void testBooleanTrue() {
     // given: true
     Program p = Program.of(new Expr.BoolLiteral(true));
+    Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p);
+    Value res = Interpreter.eval(p, e);
 
     // then
     assertEquals("true", Value.pretty(res));
@@ -49,9 +53,10 @@ class InterpreterTest {
   public void testBooleanFalse() {
     // given: false
     Program p = Program.of(new Expr.BoolLiteral(false));
+    Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p);
+    Value res = Interpreter.eval(p, e);
 
     // then
     assertEquals("false", Value.pretty(res));
@@ -61,9 +66,10 @@ class InterpreterTest {
   public void testSymbol() {
     // given: wuppie
     Program p = Program.of(new Expr.SymbolExpr("wuppie"));
+    Env e = Interpreter.newGlobalEnv();
 
     // when, then
-    assertThrows(RuntimeException.class, () -> Interpreter.eval(p));
+    assertThrows(RuntimeException.class, () -> Interpreter.eval(p, e));
   }
 
   @Test
@@ -76,9 +82,10 @@ class InterpreterTest {
                 new Expr.NumberLiteral(42),
                 new Expr.NumberLiteral(7),
                 new Expr.StringLiteral("wuppie")));
+    Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p);
+    Value res = Interpreter.eval(p, e);
 
     // then
     assertEquals("(42 7 \"wuppie\")", Value.pretty(res));
@@ -96,9 +103,10 @@ class InterpreterTest {
                     new Expr.NumberLiteral(42),
                     new Expr.NumberLiteral(7),
                     new Expr.StringLiteral("wuppie"))));
+    Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p);
+    Value res = Interpreter.eval(p, e);
 
     // then
     assertEquals("42", Value.pretty(res));
@@ -116,9 +124,10 @@ class InterpreterTest {
                     new Expr.NumberLiteral(42),
                     new Expr.NumberLiteral(7),
                     new Expr.StringLiteral("wuppie"))));
+    Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p);
+    Value res = Interpreter.eval(p, e);
 
     // then
     assertEquals("(7 \"wuppie\")", Value.pretty(res));
@@ -139,9 +148,10 @@ class InterpreterTest {
                         new Expr.NumberLiteral(42),
                         new Expr.NumberLiteral(7),
                         new Expr.StringLiteral("wuppie")))));
+    Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p);
+    Value res = Interpreter.eval(p, e);
 
     // then
     assertEquals("(true 7 \"wuppie\")", Value.pretty(res));
@@ -158,9 +168,10 @@ class InterpreterTest {
                     new Expr.SymbolExpr("<"), new Expr.NumberLiteral(1), new Expr.NumberLiteral(2)),
                 Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.StringLiteral("true")),
                 Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.StringLiteral("WUPPIE"))));
+    Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p);
+    Value res = Interpreter.eval(p, e);
 
     // then
     assertEquals("\"true\"", Value.pretty(res));
@@ -177,9 +188,10 @@ class InterpreterTest {
                     new Expr.SymbolExpr(">"), new Expr.NumberLiteral(1), new Expr.NumberLiteral(2)),
                 Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.StringLiteral("true")),
                 Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.StringLiteral("WUPPIE"))));
+    Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p);
+    Value res = Interpreter.eval(p, e);
 
     // then
     assertEquals("\"WUPPIE\"", Value.pretty(res));
@@ -195,9 +207,10 @@ class InterpreterTest {
                 new Expr.SymbolExpr("wuppie"),
                 new Expr.NumberLiteral(5)),
             Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.SymbolExpr("wuppie")));
+    Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p);
+    Value res = Interpreter.eval(p, e);
 
     // then
     assertEquals("5", Value.pretty(res));
@@ -225,9 +238,10 @@ class InterpreterTest {
                         new Expr.SymbolExpr("a"),
                         new Expr.SymbolExpr("b"),
                         new Expr.SymbolExpr("wuppie")))));
+    Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p);
+    Value res = Interpreter.eval(p, e);
 
     // then
     assertEquals("<fn foo>", Value.pretty(res));
@@ -269,9 +283,10 @@ class InterpreterTest {
             Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.SymbolExpr("c")),
             Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.SymbolExpr("wuppie")),
             Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.SymbolExpr("a")));
+    Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p);
+    Value res = Interpreter.eval(p, e);
 
     // then
     assertEquals("10", Value.pretty(res));
@@ -299,9 +314,10 @@ class InterpreterTest {
                 new Expr.SymbolExpr("let"),
                 new Expr.SymbolExpr("c"),
                 Expr.ListExpr.of(new Expr.SymbolExpr("foo"), new Expr.NumberLiteral(1))));
+    Env e = Interpreter.newGlobalEnv();
 
     // when, then
-    assertThrows(RuntimeException.class, () -> Interpreter.eval(p));
+    assertThrows(RuntimeException.class, () -> Interpreter.eval(p, e));
   }
 
   @Test
@@ -315,9 +331,10 @@ class InterpreterTest {
                 new Expr.NumberLiteral(10),
                 new Expr.NumberLiteral(100),
                 new Expr.NumberLiteral(1000)));
+    Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p);
+    Value res = Interpreter.eval(p, e);
 
     // then
     assertEquals("1111", Value.pretty(res));
@@ -333,9 +350,10 @@ class InterpreterTest {
                 new Expr.NumberLiteral(100),
                 new Expr.NumberLiteral(10),
                 new Expr.NumberLiteral(1)));
+    Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p);
+    Value res = Interpreter.eval(p, e);
 
     // then
     assertEquals("89", Value.pretty(res));
@@ -351,9 +369,10 @@ class InterpreterTest {
                 new Expr.NumberLiteral(100),
                 new Expr.NumberLiteral(10),
                 new Expr.NumberLiteral(2)));
+    Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p);
+    Value res = Interpreter.eval(p, e);
 
     // then
     assertEquals("2000", Value.pretty(res));
@@ -369,9 +388,10 @@ class InterpreterTest {
                 new Expr.NumberLiteral(100),
                 new Expr.NumberLiteral(10),
                 new Expr.NumberLiteral(2)));
+    Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p);
+    Value res = Interpreter.eval(p, e);
 
     // then
     assertEquals("5", Value.pretty(res));
@@ -402,9 +422,10 @@ class InterpreterTest {
                                 new Expr.SymbolExpr("n"),
                                 new Expr.NumberLiteral(1)))))),
             Expr.ListExpr.of(new Expr.SymbolExpr("fac"), new Expr.NumberLiteral(5)));
+    Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p);
+    Value res = Interpreter.eval(p, e);
 
     // then
     assertEquals("120", Value.pretty(res));
