@@ -51,25 +51,25 @@ public class Lexer {
     if (!eof()) {
       char c = consume();
       return switch (c) {
-        case '(' -> Token.of(LPAREN, "(");
-        case ')' -> Token.of(RPAREN, ")");
-        case '+', '-', '*', '/', '=', '>', '<' -> Token.of(OP, String.valueOf(c));
-        case '"' -> Token.of(STRING, readStringLiteral());
+        case '(' -> new Token(LPAREN, "(");
+        case ')' -> new Token(RPAREN, ")");
+        case '+', '-', '*', '/', '=', '>', '<' -> new Token(OP, String.valueOf(c));
+        case '"' -> new Token(STRING, readStringLiteral());
         default -> {
-          if (isDigit(c)) yield Token.of(NUMBER, c + readWhile(Lexer::isDigit));
+          if (isDigit(c)) yield new Token(NUMBER, c + readWhile(Lexer::isDigit));
           if (isLetter(c)) {
             String id = c + readWhile(Lexer::isLetterOrDigit);
             yield switch (id) {
-              case "true" -> Token.of(TRUE, id);
-              case "false" -> Token.of(FALSE, id);
-              default -> Token.of(ID, id);
+              case "true" -> new Token(TRUE, id);
+              case "false" -> new Token(FALSE, id);
+              default -> new Token(ID, id);
             };
           }
           throw error("unexpected character '" + c + "'");
         }
       };
     }
-    return Token.of(EOF, "<EOF>");
+    return new Token(EOF, "<EOF>");
   }
 
   private boolean eof() {
