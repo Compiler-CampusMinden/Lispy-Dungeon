@@ -178,6 +178,7 @@ public sealed interface Value
      * Apply function to arguments.
      *
      * @param args list of arguments (expressions)
+     * @param env environment to evaluate in
      * @return function result
      */
     Value apply(List<Expr> args, Env env);
