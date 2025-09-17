@@ -25,19 +25,6 @@ public class Interpreter {
   }
 
   /**
-   * Evaluate a program in a given environment.
-   *
-   * @param program ast to evaluate
-   * @param env environment to evaluate in
-   * @return result of evaluation
-   */
-  public static Value eval(Program program, Env env) {
-    return program.expressions().stream()
-        .map(e -> eval(e, env))
-        .reduce(new BoolVal(false), (prev, curr) -> curr);
-  }
-
-  /**
    * Evaluate an expression in a given environment (main interpreter dispatch).
    *
    * @param expr ast to evaluate

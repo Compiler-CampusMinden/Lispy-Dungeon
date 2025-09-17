@@ -28,7 +28,7 @@ public class Parser {
    * @param source source (string)
    * @return parsed AST
    */
-  public static Program parseString(String source) {
+  public static List<Expr> parseString(String source) {
     return new Parser(Lexer.from(source)).program();
   }
 
@@ -39,16 +39,16 @@ public class Parser {
    * @return parsed AST
    * @throws IOException when encountering issues while file handling
    */
-  public static Program parseFile(Path path) throws IOException {
+  public static List<Expr> parseFile(Path path) throws IOException {
     return new Parser(Lexer.from(path)).program();
   }
 
-  private Program program() {
+  private List<Expr> program() {
     List<Expr> exprs = new ArrayList<>();
     while (lookahead.type() != EOF) {
       exprs.add(expression());
     }
-    return new Program(exprs);
+    return exprs;
   }
 
   private Expr expression() {

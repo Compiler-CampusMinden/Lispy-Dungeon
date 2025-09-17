@@ -13,8 +13,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import lispy.interp.Env;
 import lispy.interp.Interpreter;
 import lispy.interp.Value;
+import lispy.parser.Expr;
 import lispy.parser.Parser;
-import lispy.parser.Program;
 
 /** System for Lispy interpreter. */
 public class LispySystem extends System {
@@ -72,9 +72,9 @@ public class LispySystem extends System {
     if (task == null) return;
 
     try {
-      Program p = Parser.parseString(task.code);
-      Value v = Interpreter.eval(p, env);
-      task.results.add(Value.pretty(v));
+      List<Expr> p = Parser.parseString(task.code);
+      List<Value> v = Interpreter.eval(p, env);
+      task.results.add(Value.pretty(v.getLast()));
     } catch (Exception e) {
       task.error.add("interpreter error: " + e.getMessage());
     } finally {

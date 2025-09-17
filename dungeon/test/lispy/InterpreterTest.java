@@ -14,7 +14,7 @@ class InterpreterTest {
   @Test
   public void testNumber() {
     // given: 42
-    Program p = Program.of(new Expr.NumberLiteral(42));
+    Expr p = new Expr.NumberLiteral(42);
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -27,7 +27,7 @@ class InterpreterTest {
   @Test
   public void testString() {
     // given: "wuppieFluppie"
-    Program p = Program.of(new Expr.StringLiteral("wuppieFluppie"));
+    Expr p = new Expr.StringLiteral("wuppieFluppie");
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -40,7 +40,7 @@ class InterpreterTest {
   @Test
   public void testBooleanTrue() {
     // given: true
-    Program p = Program.of(new Expr.BoolLiteral(true));
+    Expr p = new Expr.BoolLiteral(true);
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -53,7 +53,7 @@ class InterpreterTest {
   @Test
   public void testBooleanFalse() {
     // given: false
-    Program p = Program.of(new Expr.BoolLiteral(false));
+    Expr p = new Expr.BoolLiteral(false);
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -66,7 +66,7 @@ class InterpreterTest {
   @Test
   public void testSymbol() {
     // given: wuppie
-    Program p = Program.of(new Expr.SymbolExpr("wuppie"));
+    Expr p = new Expr.SymbolExpr("wuppie");
     Env e = Interpreter.newGlobalEnv();
 
     // when, then
@@ -76,8 +76,8 @@ class InterpreterTest {
   @Test
   public void testSymbolLet() {
     // given: (let wuppie 5) wuppie
-    Program p =
-        Program.of(
+    List<Expr> p =
+        List.of(
             Expr.ListExpr.of(
                 new Expr.SymbolExpr("let"),
                 new Expr.SymbolExpr("wuppie"),
@@ -86,7 +86,7 @@ class InterpreterTest {
     Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p, e);
+    Value res = Interpreter.eval(p, e).getLast();
 
     // then
     assertEquals("5", Value.pretty(res));
@@ -95,7 +95,7 @@ class InterpreterTest {
   @Test
   public void testApplyNotDefined() {
     // given: (foo 1)
-    Program p = Program.of(Expr.ListExpr.of(new Expr.SymbolExpr("foo"), new Expr.NumberLiteral(1)));
+    Expr p = Expr.ListExpr.of(new Expr.SymbolExpr("foo"), new Expr.NumberLiteral(1));
 
     Env e = new Env();
 
@@ -106,7 +106,7 @@ class InterpreterTest {
   @Test
   public void testApplyMismatchNumParams() {
     // given: (foo 1)
-    Program p = Program.of(Expr.ListExpr.of(new Expr.SymbolExpr("foo"), new Expr.NumberLiteral(1)));
+    Expr p = Expr.ListExpr.of(new Expr.SymbolExpr("foo"), new Expr.NumberLiteral(1));
 
     Env e = new Env();
     e.define("foo", new Value.ClosureFn("foo", List.of(), null, e));
@@ -119,7 +119,7 @@ class InterpreterTest {
   public void testApply() {
     // given: (foo 1)
     // foo(a) = a
-    Program p = Program.of(Expr.ListExpr.of(new Expr.SymbolExpr("foo"), new Expr.NumberLiteral(1)));
+    Expr p = Expr.ListExpr.of(new Expr.SymbolExpr("foo"), new Expr.NumberLiteral(1));
 
     Env e = new Env();
     e.define("foo", new Value.ClosureFn("foo", List.of("a"), new Expr.SymbolExpr("a"), e));
@@ -134,14 +134,13 @@ class InterpreterTest {
   @Test
   public void testBuiltinOrTrue() {
     // given: (or false 42 7 "wuppie")
-    Program p =
-        Program.of(
-            Expr.ListExpr.of(
-                new Expr.SymbolExpr("or"),
-                new Expr.BoolLiteral(false),
-                new Expr.NumberLiteral(42),
-                new Expr.NumberLiteral(7),
-                new Expr.StringLiteral("wuppie")));
+    Expr p =
+        Expr.ListExpr.of(
+            new Expr.SymbolExpr("or"),
+            new Expr.BoolLiteral(false),
+            new Expr.NumberLiteral(42),
+            new Expr.NumberLiteral(7),
+            new Expr.StringLiteral("wuppie"));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -154,8 +153,7 @@ class InterpreterTest {
   @Test
   public void testBuiltinOrFalse() {
     // given: (or false)
-    Program p =
-        Program.of(Expr.ListExpr.of(new Expr.SymbolExpr("or"), new Expr.BoolLiteral(false)));
+    Expr p = Expr.ListExpr.of(new Expr.SymbolExpr("or"), new Expr.BoolLiteral(false));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -168,14 +166,13 @@ class InterpreterTest {
   @Test
   public void testBuiltinAndTrue() {
     // given: (and true 42 7 "wuppie")
-    Program p =
-        Program.of(
-            Expr.ListExpr.of(
-                new Expr.SymbolExpr("and"),
-                new Expr.BoolLiteral(true),
-                new Expr.NumberLiteral(42),
-                new Expr.NumberLiteral(7),
-                new Expr.StringLiteral("wuppie")));
+    Expr p =
+        Expr.ListExpr.of(
+            new Expr.SymbolExpr("and"),
+            new Expr.BoolLiteral(true),
+            new Expr.NumberLiteral(42),
+            new Expr.NumberLiteral(7),
+            new Expr.StringLiteral("wuppie"));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -188,8 +185,7 @@ class InterpreterTest {
   @Test
   public void testBuiltinAndFalse() {
     // given: (and false)
-    Program p =
-        Program.of(Expr.ListExpr.of(new Expr.SymbolExpr("and"), new Expr.BoolLiteral(false)));
+    Expr p = Expr.ListExpr.of(new Expr.SymbolExpr("and"), new Expr.BoolLiteral(false));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -202,14 +198,13 @@ class InterpreterTest {
   @Test
   public void testBuiltinIfTrue() {
     // given: (if (< 1 2) (print "true") (print "WUPPIE"))
-    Program p =
-        Program.of(
+    Expr p =
+        Expr.ListExpr.of(
+            new Expr.SymbolExpr("if"),
             Expr.ListExpr.of(
-                new Expr.SymbolExpr("if"),
-                Expr.ListExpr.of(
-                    new Expr.SymbolExpr("<"), new Expr.NumberLiteral(1), new Expr.NumberLiteral(2)),
-                Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.StringLiteral("true")),
-                Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.StringLiteral("WUPPIE"))));
+                new Expr.SymbolExpr("<"), new Expr.NumberLiteral(1), new Expr.NumberLiteral(2)),
+            Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.StringLiteral("true")),
+            Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.StringLiteral("WUPPIE")));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -222,14 +217,13 @@ class InterpreterTest {
   @Test
   public void testBuiltinIfFalse() {
     // given: (if (> 1 2) (print "true") (print "WUPPIE"))
-    Program p =
-        Program.of(
+    Expr p =
+        Expr.ListExpr.of(
+            new Expr.SymbolExpr("if"),
             Expr.ListExpr.of(
-                new Expr.SymbolExpr("if"),
-                Expr.ListExpr.of(
-                    new Expr.SymbolExpr(">"), new Expr.NumberLiteral(1), new Expr.NumberLiteral(2)),
-                Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.StringLiteral("true")),
-                Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.StringLiteral("WUPPIE"))));
+                new Expr.SymbolExpr(">"), new Expr.NumberLiteral(1), new Expr.NumberLiteral(2)),
+            Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.StringLiteral("true")),
+            Expr.ListExpr.of(new Expr.SymbolExpr("print"), new Expr.StringLiteral("WUPPIE")));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -242,8 +236,8 @@ class InterpreterTest {
   @Test
   public void testBuiltinLetSymbol() {
     // given: (let wuppie 5) (print wuppie)
-    Program p =
-        Program.of(
+    List<Expr> p =
+        List.of(
             Expr.ListExpr.of(
                 new Expr.SymbolExpr("let"),
                 new Expr.SymbolExpr("wuppie"),
@@ -252,7 +246,7 @@ class InterpreterTest {
     Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p, e);
+    Value res = Interpreter.eval(p, e).getLast();
 
     // then
     assertEquals("5", Value.pretty(res));
@@ -261,8 +255,8 @@ class InterpreterTest {
   @Test
   public void testBuiltinLetSymbolMutation() {
     // given: (let wuppie 5) (let wuppie 42) (print wuppie)
-    Program p =
-        Program.of(
+    List<Expr> p =
+        List.of(
             Expr.ListExpr.of(
                 new Expr.SymbolExpr("let"),
                 new Expr.SymbolExpr("wuppie"),
@@ -275,7 +269,7 @@ class InterpreterTest {
     Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p, e);
+    Value res = Interpreter.eval(p, e).getLast();
 
     // then
     assertEquals("42", Value.pretty(res));
@@ -284,8 +278,8 @@ class InterpreterTest {
   @Test
   public void testBuiltinLetFnPrint() {
     // given: (let wuppie 5) (let a 10) (let (foo a b) (print (+ a b wuppie)))
-    Program p =
-        Program.of(
+    List<Expr> p =
+        List.of(
             Expr.ListExpr.of(
                 new Expr.SymbolExpr("let"),
                 new Expr.SymbolExpr("wuppie"),
@@ -306,7 +300,7 @@ class InterpreterTest {
     Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p, e);
+    Value res = Interpreter.eval(p, e).getLast();
 
     // then
     assertEquals("<fn foo>", Value.pretty(res));
@@ -319,8 +313,8 @@ class InterpreterTest {
     // (let (foo a b) (print (+ a b wuppie))
     // (let c (foo 1 100))
     // (print c) (print wuppie) (print a))
-    Program p =
-        Program.of(
+    List<Expr> p =
+        List.of(
             Expr.ListExpr.of(
                 new Expr.SymbolExpr("let"),
                 new Expr.SymbolExpr("wuppie"),
@@ -351,7 +345,7 @@ class InterpreterTest {
     Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p, e);
+    Value res = Interpreter.eval(p, e).getLast();
 
     // then
     assertEquals("10", Value.pretty(res));
@@ -364,8 +358,8 @@ class InterpreterTest {
     // (let (foo ) (print (+ a wuppie))
     // (let c (foo ))
     // (print c) (print wuppie) (print a))
-    Program p =
-        Program.of(
+    List<Expr> p =
+        List.of(
             Expr.ListExpr.of(
                 new Expr.SymbolExpr("let"),
                 new Expr.SymbolExpr("wuppie"),
@@ -391,7 +385,7 @@ class InterpreterTest {
     Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p, e);
+    Value res = Interpreter.eval(p, e).getLast();
 
     // then
     assertEquals("10", Value.pretty(res));
@@ -402,8 +396,8 @@ class InterpreterTest {
     // given:
     // (let (foo a b) (print (+ a b wuppie))
     // (let c (foo 1))
-    Program p =
-        Program.of(
+    List<Expr> p =
+        List.of(
             Expr.ListExpr.of(
                 new Expr.SymbolExpr("let"),
                 Expr.ListExpr.of(
@@ -428,13 +422,12 @@ class InterpreterTest {
   @Test
   public void testBuiltinList() {
     // given: (list 42 7 "wuppie")
-    Program p =
-        Program.of(
-            Expr.ListExpr.of(
-                new Expr.SymbolExpr("list"),
-                new Expr.NumberLiteral(42),
-                new Expr.NumberLiteral(7),
-                new Expr.StringLiteral("wuppie")));
+    Expr p =
+        Expr.ListExpr.of(
+            new Expr.SymbolExpr("list"),
+            new Expr.NumberLiteral(42),
+            new Expr.NumberLiteral(7),
+            new Expr.StringLiteral("wuppie"));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -447,18 +440,17 @@ class InterpreterTest {
   @Test
   public void testBuiltinListCons() {
     // given: (cons true (tail (list 42 7 "wuppie")))
-    Program p =
-        Program.of(
+    Expr p =
+        Expr.ListExpr.of(
+            new Expr.SymbolExpr("cons"),
+            new Expr.BoolLiteral(true),
             Expr.ListExpr.of(
-                new Expr.SymbolExpr("cons"),
-                new Expr.BoolLiteral(true),
+                new Expr.SymbolExpr("tail"),
                 Expr.ListExpr.of(
-                    new Expr.SymbolExpr("tail"),
-                    Expr.ListExpr.of(
-                        new Expr.SymbolExpr("list"),
-                        new Expr.NumberLiteral(42),
-                        new Expr.NumberLiteral(7),
-                        new Expr.StringLiteral("wuppie")))));
+                    new Expr.SymbolExpr("list"),
+                    new Expr.NumberLiteral(42),
+                    new Expr.NumberLiteral(7),
+                    new Expr.StringLiteral("wuppie"))));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -471,15 +463,14 @@ class InterpreterTest {
   @Test
   public void testBuiltinListHead() {
     // given: (head (list 42 7 "wuppie"))
-    Program p =
-        Program.of(
+    Expr p =
+        Expr.ListExpr.of(
+            new Expr.SymbolExpr("head"),
             Expr.ListExpr.of(
-                new Expr.SymbolExpr("head"),
-                Expr.ListExpr.of(
-                    new Expr.SymbolExpr("list"),
-                    new Expr.NumberLiteral(42),
-                    new Expr.NumberLiteral(7),
-                    new Expr.StringLiteral("wuppie"))));
+                new Expr.SymbolExpr("list"),
+                new Expr.NumberLiteral(42),
+                new Expr.NumberLiteral(7),
+                new Expr.StringLiteral("wuppie")));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -492,11 +483,10 @@ class InterpreterTest {
   @Test
   public void testBuiltinListHeadSingle() {
     // given: (head (list 42))
-    Program p =
-        Program.of(
-            Expr.ListExpr.of(
-                new Expr.SymbolExpr("head"),
-                Expr.ListExpr.of(new Expr.SymbolExpr("list"), new Expr.NumberLiteral(42))));
+    Expr p =
+        Expr.ListExpr.of(
+            new Expr.SymbolExpr("head"),
+            Expr.ListExpr.of(new Expr.SymbolExpr("list"), new Expr.NumberLiteral(42)));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -509,10 +499,9 @@ class InterpreterTest {
   @Test
   public void testBuiltinListHeadEmpty() {
     // given: (head (list ))
-    Program p =
-        Program.of(
-            Expr.ListExpr.of(
-                new Expr.SymbolExpr("head"), Expr.ListExpr.of(new Expr.SymbolExpr("list"))));
+    Expr p =
+        Expr.ListExpr.of(
+            new Expr.SymbolExpr("head"), Expr.ListExpr.of(new Expr.SymbolExpr("list")));
     Env e = Interpreter.newGlobalEnv();
 
     // when, then
@@ -522,15 +511,14 @@ class InterpreterTest {
   @Test
   public void testBuiltinListTail() {
     // given: (tail (list 42 7 "wuppie"))
-    Program p =
-        Program.of(
+    Expr p =
+        Expr.ListExpr.of(
+            new Expr.SymbolExpr("tail"),
             Expr.ListExpr.of(
-                new Expr.SymbolExpr("tail"),
-                Expr.ListExpr.of(
-                    new Expr.SymbolExpr("list"),
-                    new Expr.NumberLiteral(42),
-                    new Expr.NumberLiteral(7),
-                    new Expr.StringLiteral("wuppie"))));
+                new Expr.SymbolExpr("list"),
+                new Expr.NumberLiteral(42),
+                new Expr.NumberLiteral(7),
+                new Expr.StringLiteral("wuppie")));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -543,11 +531,10 @@ class InterpreterTest {
   @Test
   public void testBuiltinListTailSingle() {
     // given: (tail (list 42))
-    Program p =
-        Program.of(
-            Expr.ListExpr.of(
-                new Expr.SymbolExpr("tail"),
-                Expr.ListExpr.of(new Expr.SymbolExpr("list"), new Expr.NumberLiteral(42))));
+    Expr p =
+        Expr.ListExpr.of(
+            new Expr.SymbolExpr("tail"),
+            Expr.ListExpr.of(new Expr.SymbolExpr("list"), new Expr.NumberLiteral(42)));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -560,10 +547,9 @@ class InterpreterTest {
   @Test
   public void testBuiltinListTailEmpty() {
     // given: (tail (list ))
-    Program p =
-        Program.of(
-            Expr.ListExpr.of(
-                new Expr.SymbolExpr("tail"), Expr.ListExpr.of(new Expr.SymbolExpr("list"))));
+    Expr p =
+        Expr.ListExpr.of(
+            new Expr.SymbolExpr("tail"), Expr.ListExpr.of(new Expr.SymbolExpr("list")));
     Env e = Interpreter.newGlobalEnv();
 
     // when, then
@@ -573,8 +559,7 @@ class InterpreterTest {
   @Test
   public void testBuiltinBoolNotFalse() {
     // given: (not false)
-    Program p =
-        Program.of(Expr.ListExpr.of(new Expr.SymbolExpr("not"), new Expr.BoolLiteral(false)));
+    Expr p = Expr.ListExpr.of(new Expr.SymbolExpr("not"), new Expr.BoolLiteral(false));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -587,8 +572,7 @@ class InterpreterTest {
   @Test
   public void testBuiltinBoolNotTrue() {
     // given: (not true)
-    Program p =
-        Program.of(Expr.ListExpr.of(new Expr.SymbolExpr("not"), new Expr.BoolLiteral(true)));
+    Expr p = Expr.ListExpr.of(new Expr.SymbolExpr("not"), new Expr.BoolLiteral(true));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -601,7 +585,7 @@ class InterpreterTest {
   @Test
   public void testBuiltinBoolNotSomething() {
     // given: (not 1)
-    Program p = Program.of(Expr.ListExpr.of(new Expr.SymbolExpr("not"), new Expr.NumberLiteral(1)));
+    Expr p = Expr.ListExpr.of(new Expr.SymbolExpr("not"), new Expr.NumberLiteral(1));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -614,10 +598,9 @@ class InterpreterTest {
   @Test
   public void testBuiltinCompare() {
     // given: (= 1 1)
-    Program p =
-        Program.of(
-            Expr.ListExpr.of(
-                new Expr.SymbolExpr("="), new Expr.NumberLiteral(1), new Expr.NumberLiteral(1)));
+    Expr p =
+        Expr.ListExpr.of(
+            new Expr.SymbolExpr("="), new Expr.NumberLiteral(1), new Expr.NumberLiteral(1));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -630,10 +613,9 @@ class InterpreterTest {
   @Test
   public void testBuiltinCompareTypes() {
     // given: (= 1 "a")
-    Program p =
-        Program.of(
-            Expr.ListExpr.of(
-                new Expr.SymbolExpr("="), new Expr.NumberLiteral(1), new Expr.StringLiteral("a")));
+    Expr p =
+        Expr.ListExpr.of(
+            new Expr.SymbolExpr("="), new Expr.NumberLiteral(1), new Expr.StringLiteral("a"));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -646,10 +628,9 @@ class InterpreterTest {
   @Test
   public void testBuiltinLessThan() {
     // given: (< 1 3)
-    Program p =
-        Program.of(
-            Expr.ListExpr.of(
-                new Expr.SymbolExpr("<"), new Expr.NumberLiteral(1), new Expr.NumberLiteral(3)));
+    Expr p =
+        Expr.ListExpr.of(
+            new Expr.SymbolExpr("<"), new Expr.NumberLiteral(1), new Expr.NumberLiteral(3));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -662,10 +643,9 @@ class InterpreterTest {
   @Test
   public void testBuiltinGreaterThan() {
     // given: (> 1 3)
-    Program p =
-        Program.of(
-            Expr.ListExpr.of(
-                new Expr.SymbolExpr(">"), new Expr.NumberLiteral(1), new Expr.NumberLiteral(3)));
+    Expr p =
+        Expr.ListExpr.of(
+            new Expr.SymbolExpr(">"), new Expr.NumberLiteral(1), new Expr.NumberLiteral(3));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -678,14 +658,13 @@ class InterpreterTest {
   @Test
   public void testBuiltinPlus() {
     // given: (+ 1 10 100 1000)
-    Program p =
-        Program.of(
-            Expr.ListExpr.of(
-                new Expr.SymbolExpr("+"),
-                new Expr.NumberLiteral(1),
-                new Expr.NumberLiteral(10),
-                new Expr.NumberLiteral(100),
-                new Expr.NumberLiteral(1000)));
+    Expr p =
+        Expr.ListExpr.of(
+            new Expr.SymbolExpr("+"),
+            new Expr.NumberLiteral(1),
+            new Expr.NumberLiteral(10),
+            new Expr.NumberLiteral(100),
+            new Expr.NumberLiteral(1000));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -698,13 +677,12 @@ class InterpreterTest {
   @Test
   public void testBuiltinMinus() {
     // given: (- 100 10 1)
-    Program p =
-        Program.of(
-            Expr.ListExpr.of(
-                new Expr.SymbolExpr("-"),
-                new Expr.NumberLiteral(100),
-                new Expr.NumberLiteral(10),
-                new Expr.NumberLiteral(1)));
+    Expr p =
+        Expr.ListExpr.of(
+            new Expr.SymbolExpr("-"),
+            new Expr.NumberLiteral(100),
+            new Expr.NumberLiteral(10),
+            new Expr.NumberLiteral(1));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -717,13 +695,12 @@ class InterpreterTest {
   @Test
   public void testBuiltinMult() {
     // given: (* 100 10 2)
-    Program p =
-        Program.of(
-            Expr.ListExpr.of(
-                new Expr.SymbolExpr("*"),
-                new Expr.NumberLiteral(100),
-                new Expr.NumberLiteral(10),
-                new Expr.NumberLiteral(2)));
+    Expr p =
+        Expr.ListExpr.of(
+            new Expr.SymbolExpr("*"),
+            new Expr.NumberLiteral(100),
+            new Expr.NumberLiteral(10),
+            new Expr.NumberLiteral(2));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -736,13 +713,12 @@ class InterpreterTest {
   @Test
   public void testBuiltinDiv() {
     // given: (/ 100 10 2)
-    Program p =
-        Program.of(
-            Expr.ListExpr.of(
-                new Expr.SymbolExpr("/"),
-                new Expr.NumberLiteral(100),
-                new Expr.NumberLiteral(10),
-                new Expr.NumberLiteral(2)));
+    Expr p =
+        Expr.ListExpr.of(
+            new Expr.SymbolExpr("/"),
+            new Expr.NumberLiteral(100),
+            new Expr.NumberLiteral(10),
+            new Expr.NumberLiteral(2));
     Env e = Interpreter.newGlobalEnv();
 
     // when
@@ -755,8 +731,8 @@ class InterpreterTest {
   @Test
   public void testRecursion() {
     // given: (let (fac n) (if (< n 2) 1 (* n (fac (- n 1))))) (fac 5)
-    Program p =
-        Program.of(
+    List<Expr> p =
+        List.of(
             Expr.ListExpr.of(
                 new Expr.SymbolExpr("let"),
                 Expr.ListExpr.of(new Expr.SymbolExpr("fac"), new Expr.SymbolExpr("n")),
@@ -780,7 +756,7 @@ class InterpreterTest {
     Env e = Interpreter.newGlobalEnv();
 
     // when
-    Value res = Interpreter.eval(p, e);
+    Value res = Interpreter.eval(p, e).getLast();
 
     // then
     assertEquals("120", Value.pretty(res));
