@@ -23,6 +23,62 @@ import lispy.parser.Expr;
 /** Builtin functions for Lispy. */
 public class Builtins {
 
+  /** Support for control flow operations. */
+  public static Map<String, BiFunction<List<Expr>, Env, Value>> controlflow =
+      Map.of(
+          "or",
+          (args, env) -> new BoolVal(eval(args, env).stream().anyMatch(Value::isTruthy)),
+          "and",
+          (args, env) -> new BoolVal(eval(args, env).stream().allMatch(Value::isTruthy)),
+          "if",
+          (args, env) -> {
+            throwIf(args.size() < 2, "expected '(if cond then [else])'");
+
+            if (isTruthy(eval(args.get(0), env))) return eval(args.get(1), env);
+            else if (args.size() >= 3) return eval(args.get(2), env);
+            else return new BoolVal(false);
+          },
+          "let",
+          (args, env) -> {
+            throwIf(args.size() < 2, "let: too few arguments");
+
+            return switch (args.get(0)) {
+              case Expr.SymbolExpr nameSym -> { // variable: (let vname expr)
+                String vname = nameSym.name();
+                Value val = eval(args.get(1), env);
+
+                env.define(vname, val);
+
+                yield val;
+              }
+              case Expr.ListExpr fnSig -> { // function: (let (fname p1 p2 ...) body)
+                // get symbol names
+                List<String> names =
+                    fnSig.elements().stream()
+                        .map(
+                            e ->
+                                switch (e) {
+                                  case Expr.SymbolExpr(String name) -> name;
+                                  default -> throw error("let: Expr.SymbolExpr expected");
+                                })
+                        .toList();
+                throwIf(names.isEmpty(), "let: function signature expected (fname p1 p2 ...)");
+
+                // fname and params
+                String fname = names.getFirst();
+                List<String> params = names.size() > 1 ? names.subList(1, names.size()) : List.of();
+
+                // define new function
+                ClosureFn fn = new ClosureFn(fname, params, args.get(1), env);
+                env.define(fname, fn);
+
+                yield fn;
+              }
+              default ->
+                  throw error("let: expected '(let vname expr)' or '(let (fname p1 p2 ...) body)'");
+            };
+          });
+
   /** Support for list operations. */
   public static Map<String, BiFunction<List<Expr>, Env, Value>> listsupport =
       Map.of(

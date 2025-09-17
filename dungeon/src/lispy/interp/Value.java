@@ -217,7 +217,7 @@ public sealed interface Value
               + args.size());
 
       // evaluate args in current env
-      List<Value> argvals = args.stream().map(e -> eval(e, env)).toList();
+      List<Value> argvals = eval(args, env);
 
       // create new local environment based on closure environment for call
       Env callenv = new Env(closureEnv);
