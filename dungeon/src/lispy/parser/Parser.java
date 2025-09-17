@@ -3,10 +3,6 @@ package lispy.parser;
 import static lispy.lexer.Token.TokenType.*;
 import static lispy.utils.Error.error;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -31,17 +27,6 @@ public class Parser {
    */
   public static List<Expr> parseString(String source) {
     return new Parser(new Lexer(source)).program();
-  }
-
-  /**
-   * Create a Parser from File.
-   *
-   * @param path source (file)
-   * @return parsed AST
-   * @throws IOException when encountering issues while file handling
-   */
-  public static List<Expr> parseFile(Path path) throws IOException {
-    return new Parser(new Lexer(Files.readString(path, StandardCharsets.UTF_8))).program();
   }
 
   private List<Expr> program() {
