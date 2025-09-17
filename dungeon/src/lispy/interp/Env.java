@@ -7,7 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
+import java.util.function.BiFunction;
+import lispy.parser.Expr;
 
 /** memory model for interpreter. */
 public class Env {
@@ -46,7 +47,7 @@ public class Env {
    * @param builtins map of name/value pairs
    * @return this environment (for chaining operations)
    */
-  public Env define(Map<String, Function<List<Value>, Value>> builtins) {
+  public Env define(Map<String, BiFunction<List<Expr>, Env, Value>> builtins) {
     builtins.forEach((n, fn) -> define(n, new BuiltinFn(n, fn)));
     return this;
   }

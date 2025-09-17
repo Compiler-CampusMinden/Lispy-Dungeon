@@ -37,7 +37,7 @@ public class Interpreter {
   }
 
   /**
-   * Evaluate an Expression in a given environment (main interpreter dispatch).
+   * Evaluate an expression in a given environment (main interpreter dispatch).
    *
    * @param expr ast to evaluate
    * @param env environment to evaluate in
@@ -51,6 +51,17 @@ public class Interpreter {
       case SymbolExpr s -> env.get(s.name());
       case ListExpr list -> evalList(list, env);
     };
+  }
+
+  /**
+   * Evaluate a list of expressions in a given environment.
+   *
+   * @param expr list of expressions to evaluate
+   * @param env environment to evaluate in
+   * @return list of results of evaluation
+   */
+  public static List<Value> eval(List<Expr> expr, Env env) {
+    return expr.stream().map(e -> eval(e, env)).toList();
   }
 
   private static Value evalList(ListExpr list, Env env) {
@@ -73,7 +84,7 @@ public class Interpreter {
       case "while" -> evalWhile(elems, env);
       case "and" -> evalAnd(elems, env);
       case "or" -> evalOr(elems, env);
-      default -> evalFn(headExpr, elems, env);
+      default -> apply(headExpr, elems, env);
     };
   }
 
@@ -159,7 +170,7 @@ public class Interpreter {
     return new BoolVal(elems.stream().skip(1).map(e -> eval(e, env)).anyMatch(Value::isTruthy));
   }
 
-  private static Value evalFn(SymbolExpr headExpr, List<Expr> elems, Env env) {
+  private static Value apply(SymbolExpr headExpr, List<Expr> elems, Env env) {
     // evaluate function name in current env
     FnVal fn =
         switch (eval(headExpr, env)) {
@@ -167,10 +178,7 @@ public class Interpreter {
           default -> throw error("function expected: " + headExpr);
         };
 
-    // evaluate args in current env
-    List<Value> args = elems.stream().skip(1).map(e -> eval(e, env)).toList();
-
     // apply function to args
-    return fn.apply(args);
+    return fn.apply(elems.subList(1, elems.size()), env);
   }
 }

@@ -1,5 +1,6 @@
 package lispy.interp;
 
+import static lispy.interp.Interpreter.eval;
 import static lispy.interp.Value.*;
 import static lispy.utils.Error.error;
 import static lispy.utils.Error.throwIf;
@@ -15,147 +16,167 @@ import core.utils.Vector2;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.stream.IntStream;
+import lispy.parser.Expr;
 
 /** Builtin functions for Lispy. */
 public class Builtins {
 
   /** Support for list operations. */
-  public static Map<String, Function<List<Value>, Value>> listsupport =
+  public static Map<String, BiFunction<List<Expr>, Env, Value>> listsupport =
       Map.of(
-          "list", ListVal::of,
+          "list",
+          (args, env) -> ListVal.of(eval(args, env)),
           "cons",
-              args -> {
-                throwIf(args.size() != 2, "cons: expected two arguments");
+          (args, env) -> {
+            throwIf(args.size() != 2, "cons: expected two arguments");
+            List<Value> argvals = eval(args, env);
 
-                Value head = args.getFirst();
-                ListVal tail = asList(args.getLast());
-                List<Value> out = new ArrayList<>(tail.elements().size() + 1);
-                out.add(head);
-                out.addAll(tail.elements());
-                return ListVal.of(out);
-              },
+            List<Value> out = new ArrayList<>();
+            out.add(argvals.getFirst());
+            out.addAll(asList(argvals.getLast()).elements());
+            return ListVal.of(out);
+          },
           "head",
-              args -> {
-                throwIf(args.size() != 1, "head: expected one argument");
+          (args, env) -> {
+            throwIf(args.size() != 1, "head: expected one argument");
+            List<Value> argvals = eval(args, env);
 
-                ListVal l = asList(args.getFirst());
-                throwIf(l.isEmpty(), "head: got empty list");
-                return l.elements().getFirst();
-              },
+            ListVal l = asList(argvals.getFirst());
+            throwIf(l.isEmpty(), "head: got empty list");
+            return l.elements().getFirst();
+          },
           "tail",
-              args -> {
-                throwIf(args.size() != 1, "tail: expected one argument");
+          (args, env) -> {
+            throwIf(args.size() != 1, "tail: expected one argument");
+            List<Value> argvals = eval(args, env);
 
-                ListVal l = asList(args.getFirst());
-                throwIf(l.isEmpty(), "tail: got empty list");
-                return ListVal.of(l.elements().subList(1, l.elements().size()));
-              },
+            ListVal l = asList(argvals.getFirst());
+            throwIf(l.isEmpty(), "tail: got empty list");
+            return ListVal.of(l.elements().subList(1, l.elements().size()));
+          },
           "empty?",
-              args -> {
-                throwIf(args.size() != 1, "empty?: expected one argument");
+          (args, env) -> {
+            throwIf(args.size() != 1, "empty?: expected one argument");
+            List<Value> argvals = eval(args, env);
 
-                ListVal l = asList(args.getFirst());
-                return new BoolVal(l.isEmpty());
-              },
+            return new BoolVal(asList(argvals.getFirst()).isEmpty());
+          },
           "length",
-              args -> {
-                throwIf(args.size() != 1, "length: expected one argument");
+          (args, env) -> {
+            throwIf(args.size() != 1, "length: expected one argument");
+            List<Value> argvals = eval(args, env);
 
-                ListVal l = asList(args.getFirst());
-                return new NumVal(l.elements().size());
-              },
+            return new NumVal(asList(argvals.getFirst()).elements().size());
+          },
           "append",
-              args ->
-                  ListVal.of(
-                      args.stream()
-                          .map(Value::asList)
-                          .flatMap(l -> l.elements().stream())
-                          .toList()),
-          "nth",
-              args -> {
-                throwIf(args.size() != 2, "nth: expected two arguments");
+          (args, env) -> {
+            List<Value> argvals = eval(args, env);
 
-                int i = asNum(args.getFirst());
-                ListVal l = asList(args.getLast());
-                throwIf(i < 0 || i >= l.elements().size(), "nth: index out of bounds");
-                return l.elements().get(i);
-              });
+            return ListVal.of(
+                argvals.stream().map(Value::asList).flatMap(l -> l.elements().stream()).toList());
+          },
+          "nth",
+          (args, env) -> {
+            throwIf(args.size() != 2, "nth: expected two arguments");
+            List<Value> argvals = eval(args, env);
+
+            int i = asNum(argvals.getFirst());
+            ListVal l = asList(argvals.getLast());
+            throwIf(i < 0 || i >= l.elements().size(), "nth: index out of bounds");
+            return l.elements().get(i);
+          });
 
   /** Support for printing values. */
-  public static Map<String, Function<List<Value>, Value>> print =
+  public static Map<String, BiFunction<List<Expr>, Env, Value>> print =
       Map.of(
           "print",
-          args -> {
-            String line = args.stream().map(Value::pretty).reduce((a, b) -> a + " " + b).orElse("");
+          (args, env) -> {
+            List<Value> argvals = eval(args, env);
+
+            String line =
+                argvals.stream().map(Value::pretty).reduce((a, b) -> a + " " + b).orElse("");
             System.out.println(line);
-            return args.isEmpty() ? new BoolVal(true) : args.getLast();
+            return argvals.isEmpty() ? new BoolVal(true) : argvals.getLast();
           });
 
   /** Support for comparing values. */
-  public static Map<String, Function<List<Value>, Value>> logicsupport =
+  public static Map<String, BiFunction<List<Expr>, Env, Value>> logicsupport =
       Map.of(
           "not",
-          args -> {
+          (args, env) -> {
             throwIf(args.size() != 1, "not: expected one argument");
-            return new BoolVal(!isTruthy(args.getFirst()));
+            List<Value> argvals = eval(args, env);
+
+            return new BoolVal(!isTruthy(argvals.getFirst()));
           },
           "=",
-          args -> {
+          (args, env) -> {
             throwIf(args.isEmpty(), "=: expected at least one argument");
+            List<Value> argvals = eval(args, env);
 
-            if (args.size() == 1) return new BoolVal(true);
-            Value res = args.getFirst();
-            return new BoolVal(args.stream().skip(1).allMatch(v -> valueEquals(res, v)));
+            if (argvals.size() == 1) return new BoolVal(true);
+            Value res = argvals.getFirst();
+            return new BoolVal(argvals.stream().skip(1).allMatch(v -> valueEquals(res, v)));
           },
           ">",
-          args -> {
+          (args, env) -> {
             throwIf(args.isEmpty(), ">: expected at least one argument");
+            List<Value> argvals = eval(args, env);
 
-            List<Integer> list = args.stream().map(Value::asNum).toList();
+            List<Integer> list = argvals.stream().map(Value::asNum).toList();
             return new BoolVal(
                 IntStream.range(1, list.size())
                     .allMatch(i -> list.get(i - 1).compareTo(list.get(i)) > 0));
           },
           "<",
-          args -> {
+          (args, env) -> {
             throwIf(args.isEmpty(), "<: expected at least one argument");
+            List<Value> argvals = eval(args, env);
 
-            List<Integer> list = args.stream().map(Value::asNum).toList();
+            List<Integer> list = argvals.stream().map(Value::asNum).toList();
             return new BoolVal(
                 IntStream.range(1, list.size())
                     .allMatch(i -> list.get(i - 1).compareTo(list.get(i)) < 0));
           });
 
   /** Support for arithmetic operations. */
-  public static Map<String, Function<List<Value>, Value>> mathsupport =
+  public static Map<String, BiFunction<List<Expr>, Env, Value>> mathsupport =
       Map.of(
           "+",
-          args -> {
+          (args, env) -> {
             throwIf(args.isEmpty(), "+: expected at least one argument");
-            return new NumVal(args.stream().map(Value::asNum).reduce(0, Integer::sum));
+            List<Value> argvals = eval(args, env);
+
+            return new NumVal(argvals.stream().map(Value::asNum).reduce(0, Integer::sum));
           },
           "-",
-          args -> {
+          (args, env) -> {
             throwIf(args.isEmpty(), "-: expected at least one argument");
+            List<Value> argvals = eval(args, env);
 
-            int res = asNum(args.getFirst());
-            if (args.size() == 1) return new NumVal(-1 * res);
-            return new NumVal(args.stream().skip(1).map(Value::asNum).reduce(res, (a, b) -> a - b));
+            int res = asNum(argvals.getFirst());
+            if (argvals.size() == 1) return new NumVal(-1 * res);
+            return new NumVal(
+                argvals.stream().skip(1).map(Value::asNum).reduce(res, (a, b) -> a - b));
           },
           "*",
-          args -> {
+          (args, env) -> {
             throwIf(args.isEmpty(), "*: expected at least one argument");
-            return new NumVal(args.stream().map(Value::asNum).reduce(1, (a, b) -> a * b));
+            List<Value> argvals = eval(args, env);
+
+            return new NumVal(argvals.stream().map(Value::asNum).reduce(1, (a, b) -> a * b));
           },
           "/",
-          args -> {
+          (args, env) -> {
             throwIf(args.isEmpty(), "/: expected at least one argument");
+            List<Value> argvals = eval(args, env);
 
-            int res = asNum(args.getFirst());
-            if (args.size() == 1) return new NumVal(1 / res);
-            return new NumVal(args.stream().skip(1).map(Value::asNum).reduce(res, (a, b) -> a / b));
+            int res = asNum(argvals.getFirst());
+            if (argvals.size() == 1) return new NumVal(1 / res);
+            return new NumVal(
+                argvals.stream().skip(1).map(Value::asNum).reduce(res, (a, b) -> a / b));
           });
 
   /**
@@ -163,19 +184,20 @@ public class Builtins {
    *
    * <p>This is real shit from utils.BlocklyCommands (blockly project).
    */
-  public static Map<String, Function<List<Value>, Value>> dungeonsupport =
+  public static Map<String, BiFunction<List<Expr>, Env, Value>> dungeonsupport =
       Map.of(
           "shoot",
-          args -> {
+          (args, env) -> {
             new Skill(new FireballSkill(SkillTools::cursorPositionAsPoint), 500)
                 .execute(Game.hero().orElseThrow());
 
             return new BoolVal(true);
           },
           "move",
-          args -> {
+          (args, env) -> {
             throwIf(args.isEmpty(), "move: expected at least one argument");
-            int steps = asNum(args.getFirst());
+
+            int steps = asNum(eval(args, env).getFirst());
 
             Vector2 newForce =
                 Vector2.of(10 * steps, 10 * steps).scale(EntityUtils.getHeroViewDirection());
@@ -195,11 +217,11 @@ public class Builtins {
             return new BoolVal(true);
           },
           "turn",
-          args -> {
+          (args, env) -> {
             throwIf(args.isEmpty(), "turn: expected at least one argument");
 
             Direction dir =
-                switch (args.getFirst()) {
+                switch (eval(args, env).getFirst()) {
                   case StrVal s ->
                       switch (s.value()) {
                         case "left" -> Direction.LEFT;

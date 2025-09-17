@@ -1,10 +1,11 @@
 package lispy.interp;
 
+import static lispy.interp.Interpreter.eval;
 import static lispy.utils.Error.error;
 import static lispy.utils.Error.throwIf;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 import lispy.parser.Expr;
 
@@ -176,10 +177,10 @@ public sealed interface Value
     /**
      * Apply function to arguments.
      *
-     * @param args list of arguments
+     * @param args list of arguments (expressions)
      * @return function result
      */
-    Value apply(List<Value> args);
+    Value apply(List<Expr> args, Env env);
   }
 
   /**
@@ -188,10 +189,10 @@ public sealed interface Value
    * @param name fn name
    * @param impl reference to implementation (lambda)
    */
-  record BuiltinFn(String name, Function<List<Value>, Value> impl) implements FnVal {
+  record BuiltinFn(String name, BiFunction<List<Expr>, Env, Value> impl) implements FnVal {
     @Override
-    public Value apply(List<Value> args) {
-      return impl.apply(args);
+    public Value apply(List<Expr> args, Env env) {
+      return impl.apply(args, env);
     }
   }
 
@@ -205,7 +206,7 @@ public sealed interface Value
    */
   record ClosureFn(String name, List<String> params, Expr body, Env closureEnv) implements FnVal {
     @Override
-    public Value apply(List<Value> args) {
+    public Value apply(List<Expr> args, Env env) {
       throwIf(
           args.size() != params.size(),
           "arity mismatch when calling "
@@ -215,9 +216,17 @@ public sealed interface Value
               + ", got "
               + args.size());
 
+      // evaluate args in current env
+      List<Value> argvals = args.stream().map(e -> eval(e, env)).toList();
+
+      // create new local environment based on closure environment for call
       Env callenv = new Env(closureEnv);
-      IntStream.range(0, params.size()).forEach(i -> callenv.define(params.get(i), args.get(i)));
-      return Interpreter.eval(body, callenv);
+
+      // define all parameters using the argvals in our new environment
+      IntStream.range(0, params.size()).forEach(i -> callenv.define(params.get(i), argvals.get(i)));
+
+      // finally: do the call
+      return eval(body, callenv);
     }
   }
 }
