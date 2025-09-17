@@ -113,6 +113,36 @@ class InterpreterTest {
   }
 
   @Test
+  public void testListHeadSingle() {
+    // given: (head (list 42))
+    Program p =
+        Program.of(
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("head"),
+                Expr.ListExpr.of(new Expr.SymbolExpr("list"), new Expr.NumberLiteral(42))));
+    Env e = Interpreter.newGlobalEnv();
+
+    // when
+    Value res = Interpreter.eval(p, e);
+
+    // then
+    assertEquals("42", Value.pretty(res));
+  }
+
+  @Test
+  public void testListHeadEmpty() {
+    // given: (head (list ))
+    Program p =
+        Program.of(
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("head"), Expr.ListExpr.of(new Expr.SymbolExpr("list"))));
+    Env e = Interpreter.newGlobalEnv();
+
+    // when, then
+    assertThrows(RuntimeException.class, () -> Interpreter.eval(p, e));
+  }
+
+  @Test
   public void testListTail() {
     // given: (tail (list 42 7 "wuppie"))
     Program p =
@@ -131,6 +161,36 @@ class InterpreterTest {
 
     // then
     assertEquals("(7 \"wuppie\")", Value.pretty(res));
+  }
+
+  @Test
+  public void testListTailSingle() {
+    // given: (tail (list 42))
+    Program p =
+        Program.of(
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("tail"),
+                Expr.ListExpr.of(new Expr.SymbolExpr("list"), new Expr.NumberLiteral(42))));
+    Env e = Interpreter.newGlobalEnv();
+
+    // when
+    Value res = Interpreter.eval(p, e);
+
+    // then
+    assertEquals("()", Value.pretty(res));
+  }
+
+  @Test
+  public void testListTailEmpty() {
+    // given: (tail (list ))
+    Program p =
+        Program.of(
+            Expr.ListExpr.of(
+                new Expr.SymbolExpr("tail"), Expr.ListExpr.of(new Expr.SymbolExpr("list"))));
+    Env e = Interpreter.newGlobalEnv();
+
+    // when, then
+    assertThrows(RuntimeException.class, () -> Interpreter.eval(p, e));
   }
 
   @Test
