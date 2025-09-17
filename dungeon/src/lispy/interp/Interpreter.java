@@ -1,12 +1,11 @@
-package lispy;
+package lispy.interp;
 
-import static lispy.Error.*;
-import static lispy.ast.Expr.*;
-import static lispy.values.Value.*;
+import static lispy.interp.Value.*;
+import static lispy.parser.Expr.*;
+import static lispy.utils.Error.*;
 
 import java.util.List;
-import lispy.ast.*;
-import lispy.values.*;
+import lispy.parser.*;
 
 /** Lispy interpreter. */
 public class Interpreter {

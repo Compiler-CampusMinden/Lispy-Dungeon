@@ -1,4 +1,4 @@
-package lispy.token;
+package lispy.lexer;
 
 /** Token type. */
 public enum TokenType {

@@ -1,13 +1,12 @@
-package lispy.values;
+package lispy.interp;
 
-import static lispy.Error.error;
-import static lispy.Error.throwIf;
+import static lispy.utils.Error.error;
+import static lispy.utils.Error.throwIf;
 
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.IntStream;
-import lispy.Interpreter;
-import lispy.ast.Expr;
+import lispy.parser.Expr;
 
 /**
  * Representation of values.

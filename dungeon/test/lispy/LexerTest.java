@@ -5,8 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
-import lispy.token.Token;
-import lispy.token.TokenType;
+import lispy.lexer.Lexer;
+import lispy.lexer.Token;
+import lispy.lexer.TokenType;
 import org.junit.jupiter.api.Test;
 
 class LexerTest {

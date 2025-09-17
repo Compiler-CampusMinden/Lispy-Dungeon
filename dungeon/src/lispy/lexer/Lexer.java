@@ -1,7 +1,7 @@
-package lispy;
+package lispy.lexer;
 
-import static lispy.Error.*;
-import static lispy.token.TokenType.*;
+import static lispy.lexer.TokenType.*;
+import static lispy.utils.Error.*;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -9,7 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.function.Predicate;
-import lispy.token.Token;
 
 /** Lexer (recursive descent). */
 public class Lexer {

@@ -2,8 +2,9 @@ package lispy;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import lispy.ast.*;
-import lispy.values.Value;
+import lispy.interp.Interpreter;
+import lispy.interp.Value;
+import lispy.parser.*;
 import org.junit.jupiter.api.Test;
 
 class InterpreterTest {

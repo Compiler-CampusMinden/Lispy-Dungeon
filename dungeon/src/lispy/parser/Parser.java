@@ -1,16 +1,16 @@
-package lispy;
+package lispy.parser;
 
-import static lispy.Error.error;
-import static lispy.token.TokenType.*;
+import static lispy.lexer.TokenType.*;
+import static lispy.utils.Error.error;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import lispy.ast.*;
-import lispy.token.Token;
-import lispy.token.TokenType;
+import lispy.lexer.Lexer;
+import lispy.lexer.Token;
+import lispy.lexer.TokenType;
 
 /** LL(1) parser (recursive descent). */
 public class Parser {

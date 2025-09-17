@@ -1,4 +1,4 @@
-package lispy;
+package lispy.utils;
 
 /** Utility class to handle error messages. */
 public class Error {

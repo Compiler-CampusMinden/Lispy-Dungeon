@@ -1,4 +1,4 @@
-package lispy.ast;
+package lispy.parser;
 
 import java.util.List;
 

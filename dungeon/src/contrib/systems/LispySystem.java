@@ -10,11 +10,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
-import lispy.Interpreter;
-import lispy.Parser;
-import lispy.ast.Program;
-import lispy.values.Env;
-import lispy.values.Value;
+import lispy.interp.Env;
+import lispy.interp.Interpreter;
+import lispy.interp.Value;
+import lispy.parser.Parser;
+import lispy.parser.Program;
 
 /** System for Lispy interpreter. */
 public class LispySystem extends System {

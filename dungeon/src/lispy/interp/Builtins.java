@@ -1,8 +1,8 @@
-package lispy.values;
+package lispy.interp;
 
-import static lispy.Error.error;
-import static lispy.Error.throwIf;
-import static lispy.values.Value.*;
+import static lispy.interp.Value.*;
+import static lispy.utils.Error.error;
+import static lispy.utils.Error.throwIf;
 
 import contrib.utils.EntityUtils;
 import contrib.utils.components.skill.FireballSkill;
