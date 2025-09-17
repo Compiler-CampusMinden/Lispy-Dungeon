@@ -25,6 +25,28 @@ public class Interpreter {
   }
 
   /**
+   * Evaluate source code in a given environment.
+   *
+   * @param source source to evaluate
+   * @param env environment to evaluate in
+   * @return result of evaluation
+   */
+  public static List<Value> eval(String source, Env env) {
+    return Interpreter.eval(Parser.parseString(source), env);
+  }
+
+  /**
+   * Evaluate a list of expressions in a given environment.
+   *
+   * @param expr list of expressions to evaluate
+   * @param env environment to evaluate in
+   * @return list of results of evaluation
+   */
+  public static List<Value> eval(List<Expr> expr, Env env) {
+    return expr.stream().map(e -> eval(e, env)).toList();
+  }
+
+  /**
    * Evaluate an expression in a given environment (main interpreter dispatch).
    *
    * @param expr ast to evaluate
@@ -39,17 +61,6 @@ public class Interpreter {
       case SymbolExpr s -> env.resolve(s.name());
       case ListExpr list -> apply(list, env);
     };
-  }
-
-  /**
-   * Evaluate a list of expressions in a given environment.
-   *
-   * @param expr list of expressions to evaluate
-   * @param env environment to evaluate in
-   * @return list of results of evaluation
-   */
-  public static List<Value> eval(List<Expr> expr, Env env) {
-    return expr.stream().map(e -> eval(e, env)).toList();
   }
 
   private static Value apply(ListExpr list, Env env) {
