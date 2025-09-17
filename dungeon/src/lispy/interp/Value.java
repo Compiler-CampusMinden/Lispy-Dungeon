@@ -141,16 +141,6 @@ public sealed interface Value
    */
   record ListVal(List<Value> elements) implements Value {
     /**
-     * create a new list value.
-     *
-     * @param vs list of values
-     * @return new list value
-     */
-    public static ListVal of(List<Value> vs) {
-      return new ListVal(vs);
-    }
-
-    /**
      * is this list empty?
      *
      * @return true if empty

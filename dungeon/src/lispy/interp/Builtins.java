@@ -83,7 +83,7 @@ public class Builtins {
   public static Map<String, BiFunction<List<Expr>, Env, Value>> listsupport =
       Map.of(
           "list",
-          (args, env) -> ListVal.of(eval(args, env)),
+          (args, env) -> new ListVal(eval(args, env)),
           "cons",
           (args, env) -> {
             throwIf(args.size() != 2, "cons: expected two arguments");
@@ -92,7 +92,7 @@ public class Builtins {
             List<Value> out = new ArrayList<>();
             out.add(argvals.getFirst());
             out.addAll(asList(argvals.getLast()).elements());
-            return ListVal.of(out);
+            return new ListVal(out);
           },
           "head",
           (args, env) -> {
@@ -110,7 +110,7 @@ public class Builtins {
 
             ListVal l = asList(argvals.getFirst());
             throwIf(l.isEmpty(), "tail: got empty list");
-            return ListVal.of(l.elements().subList(1, l.elements().size()));
+            return new ListVal(l.elements().subList(1, l.elements().size()));
           },
           "empty?",
           (args, env) -> {
@@ -130,7 +130,7 @@ public class Builtins {
           (args, env) -> {
             List<Value> argvals = eval(args, env);
 
-            return ListVal.of(
+            return new ListVal(
                 argvals.stream().map(Value::asList).flatMap(l -> l.elements().stream()).toList());
           },
           "nth",
