@@ -110,7 +110,7 @@ class InterpreterTest {
     Expr p = new Expr.ListExpr(List.of(new Expr.SymbolExpr("foo"), new Expr.NumberLiteral(1)));
 
     Env e = new Env();
-    e.define("foo", new Value.ClosureFn("foo", List.of(), null, e));
+    e.bind("foo", new Value.ClosureFn("foo", List.of(), null, e));
 
     // when, then
     assertThrows(RuntimeException.class, () -> Interpreter.eval(p, e));
@@ -123,7 +123,7 @@ class InterpreterTest {
     Expr p = new Expr.ListExpr(List.of(new Expr.SymbolExpr("foo"), new Expr.NumberLiteral(1)));
 
     Env e = new Env();
-    e.define("foo", new Value.ClosureFn("foo", List.of("a"), new Expr.SymbolExpr("a"), e));
+    e.bind("foo", new Value.ClosureFn("foo", List.of("a"), new Expr.SymbolExpr("a"), e));
 
     // when
     Value res = Interpreter.eval(p, e);

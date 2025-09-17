@@ -16,12 +16,12 @@ public class Interpreter {
    */
   public static Env newGlobalEnv() {
     return new Env()
-        .define(Builtins.controlflow)
-        .define(Builtins.mathsupport)
-        .define(Builtins.logicsupport)
-        .define(Builtins.print)
-        .define(Builtins.listsupport)
-        .define(Builtins.dungeonsupport);
+        .bind(Builtins.controlflow)
+        .bind(Builtins.mathsupport)
+        .bind(Builtins.logicsupport)
+        .bind(Builtins.print)
+        .bind(Builtins.listsupport)
+        .bind(Builtins.dungeonsupport);
   }
 
   /**
@@ -36,7 +36,7 @@ public class Interpreter {
       case NumberLiteral n -> new NumVal(n.value());
       case StringLiteral s -> new StrVal(s.value());
       case BoolLiteral b -> new BoolVal(b.value());
-      case SymbolExpr s -> env.get(s.name());
+      case SymbolExpr s -> env.resolve(s.name());
       case ListExpr list -> apply(list, env);
     };
   }

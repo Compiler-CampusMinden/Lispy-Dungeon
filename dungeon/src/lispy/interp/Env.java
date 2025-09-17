@@ -36,7 +36,7 @@ public class Env {
    * @param value value
    * @return this environment (for chaining operations)
    */
-  public Env define(String name, Value value) {
+  public Env bind(String name, Value value) {
     values.put(Objects.requireNonNull(name), Objects.requireNonNull(value));
     return this;
   }
@@ -47,8 +47,8 @@ public class Env {
    * @param builtins map of name/value pairs
    * @return this environment (for chaining operations)
    */
-  public Env define(Map<String, BiFunction<List<Expr>, Env, Value>> builtins) {
-    builtins.forEach((n, fn) -> define(n, new BuiltinFn(n, fn)));
+  public Env bind(Map<String, BiFunction<List<Expr>, Env, Value>> builtins) {
+    builtins.forEach((n, fn) -> bind(n, new BuiltinFn(n, fn)));
     return this;
   }
 
@@ -58,9 +58,9 @@ public class Env {
    * @param name name
    * @return value
    */
-  public Value get(String name) {
+  public Value resolve(String name) {
     if (values.containsKey(name)) return values.get(name);
-    else if (enclosing != null) return enclosing.get(name);
+    else if (enclosing != null) return enclosing.resolve(name);
     else throw error("unbound symbol: " + name);
   }
 }

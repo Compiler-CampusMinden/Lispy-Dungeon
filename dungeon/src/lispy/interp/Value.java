@@ -224,7 +224,7 @@ public sealed interface Value
       Env callenv = new Env(closureEnv);
 
       // define all parameters using the argvals in our new environment
-      IntStream.range(0, params.size()).forEach(i -> callenv.define(params.get(i), argvals.get(i)));
+      IntStream.range(0, params.size()).forEach(i -> callenv.bind(params.get(i), argvals.get(i)));
 
       // finally: do the call
       return eval(body, callenv);

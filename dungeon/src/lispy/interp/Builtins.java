@@ -47,7 +47,7 @@ public class Builtins {
                 String vname = nameSym.name();
                 Value val = eval(args.get(1), env);
 
-                env.define(vname, val);
+                env.bind(vname, val);
 
                 yield val;
               }
@@ -70,7 +70,7 @@ public class Builtins {
 
                 // define new function
                 ClosureFn fn = new ClosureFn(fname, params, args.get(1), env);
-                env.define(fname, fn);
+                env.bind(fname, fn);
 
                 yield fn;
               }
