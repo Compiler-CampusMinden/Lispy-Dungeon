@@ -3,10 +3,6 @@ package lispy.lexer;
 import static lispy.lexer.Token.TokenType.*;
 import static lispy.utils.Error.*;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Objects;
 import java.util.function.Predicate;
 
@@ -15,29 +11,13 @@ public class Lexer {
   private String input;
   private int index = 0;
 
-  private Lexer(String input) {
-    this.input = input;
-  }
-
   /**
    * Create a Lexer from String.
    *
-   * @param source source (string)
-   * @return new lexer
+   * @param input source (string)
    */
-  public static Lexer from(String source) {
-    return new Lexer(Objects.requireNonNull(source));
-  }
-
-  /**
-   * Create a Lexer from File.
-   *
-   * @param path source (file)
-   * @return new lexer
-   * @throws IOException when encountering issues while file handling
-   */
-  public static Lexer from(Path path) throws IOException {
-    return new Lexer(Files.readString(path, StandardCharsets.UTF_8));
+  public Lexer(String input) {
+    this.input = Objects.requireNonNull(input);
   }
 
   /**

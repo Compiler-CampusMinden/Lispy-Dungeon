@@ -14,7 +14,7 @@ class LexerTest {
   @Test
   public void testSimpleLParen() {
     // given
-    Lexer l = Lexer.from("(");
+    Lexer l = new Lexer("(");
 
     // when
     Token t = l.nextToken();
@@ -26,7 +26,7 @@ class LexerTest {
   @Test
   public void testSimpleRParen() {
     // given
-    Lexer l = Lexer.from(")");
+    Lexer l = new Lexer(")");
 
     // when
     Token t = l.nextToken();
@@ -38,7 +38,7 @@ class LexerTest {
   @Test
   public void testSimpleTrue() {
     // given
-    Lexer l = Lexer.from("true");
+    Lexer l = new Lexer("true");
 
     // when
     Token t = l.nextToken();
@@ -50,7 +50,7 @@ class LexerTest {
   @Test
   public void testSimpleFalse() {
     // given
-    Lexer l = Lexer.from("false");
+    Lexer l = new Lexer("false");
 
     // when
     Token t = l.nextToken();
@@ -62,7 +62,7 @@ class LexerTest {
   @Test
   public void testSimpleID() {
     // given
-    Lexer l = Lexer.from("foBaa2poo");
+    Lexer l = new Lexer("foBaa2poo");
 
     // when
     Token t = l.nextToken();
@@ -74,7 +74,7 @@ class LexerTest {
   @Test
   public void testSimpleNumber() {
     // given
-    Lexer l = Lexer.from("12345");
+    Lexer l = new Lexer("12345");
 
     // when
     Token t = l.nextToken();
@@ -86,7 +86,7 @@ class LexerTest {
   @Test
   public void testSimpleOpPlus() {
     // given
-    Lexer l = Lexer.from("+");
+    Lexer l = new Lexer("+");
 
     // when
     Token t = l.nextToken();
@@ -98,7 +98,7 @@ class LexerTest {
   @Test
   public void testSimpleOpMinus() {
     // given
-    Lexer l = Lexer.from("-");
+    Lexer l = new Lexer("-");
 
     // when
     Token t = l.nextToken();
@@ -110,7 +110,7 @@ class LexerTest {
   @Test
   public void testSimpleOpMult() {
     // given
-    Lexer l = Lexer.from("*");
+    Lexer l = new Lexer("*");
 
     // when
     Token t = l.nextToken();
@@ -122,7 +122,7 @@ class LexerTest {
   @Test
   public void testSimpleOpDiv() {
     // given
-    Lexer l = Lexer.from("/");
+    Lexer l = new Lexer("/");
 
     // when
     Token t = l.nextToken();
@@ -134,7 +134,7 @@ class LexerTest {
   @Test
   public void testSimpleOpAssign() {
     // given
-    Lexer l = Lexer.from("=");
+    Lexer l = new Lexer("=");
 
     // when
     Token t = l.nextToken();
@@ -146,7 +146,7 @@ class LexerTest {
   @Test
   public void testSimpleOpGt() {
     // given
-    Lexer l = Lexer.from(">");
+    Lexer l = new Lexer(">");
 
     // when
     Token t = l.nextToken();
@@ -158,7 +158,7 @@ class LexerTest {
   @Test
   public void testSimpleOpLt() {
     // given
-    Lexer l = Lexer.from("<");
+    Lexer l = new Lexer("<");
 
     // when
     Token t = l.nextToken();
@@ -170,7 +170,7 @@ class LexerTest {
   @Test
   public void testSimpleString() {
     // given
-    Lexer l = Lexer.from("\" foo bar wuppie fluppie  \"");
+    Lexer l = new Lexer("\" foo bar wuppie fluppie  \"");
 
     // when
     Token t = l.nextToken();
@@ -182,7 +182,7 @@ class LexerTest {
   @Test
   public void testDefectString() {
     // given
-    Lexer l = Lexer.from("\" foo bar wuppie fluppie  ");
+    Lexer l = new Lexer("\" foo bar wuppie fluppie  ");
 
     // when, then
     assertThrows(RuntimeException.class, l::nextToken);
@@ -191,7 +191,7 @@ class LexerTest {
   @Test
   public void testComment() {
     // given
-    Lexer l = Lexer.from("< ;; foo bar wuppie");
+    Lexer l = new Lexer("< ;; foo bar wuppie");
 
     // when
     Token t1 = l.nextToken();
@@ -205,7 +205,7 @@ class LexerTest {
   @Test
   public void testComplexLine() {
     // given
-    Lexer l = Lexer.from("(if (< 1 2) (do (print \"true\") (print \"WUPPIE\")) (print \"false\"))");
+    Lexer l = new Lexer("(if (< 1 2) (do (print \"true\") (print \"WUPPIE\")) (print \"false\"))");
 
     // when
     List<Token> tokactual = new ArrayList<>();
