@@ -6,9 +6,8 @@ import static lispy.utils.Error.error;
 import static lispy.utils.Error.throwIf;
 
 import contrib.utils.EntityUtils;
-import contrib.utils.components.skill.FireballSkill;
-import contrib.utils.components.skill.Skill;
 import contrib.utils.components.skill.SkillTools;
+import contrib.utils.components.skill.projectileSkill.FireballSkill;
 import core.Game;
 import core.components.VelocityComponent;
 import core.utils.Direction;
@@ -244,9 +243,8 @@ public class Builtins {
       Map.of(
           "shoot",
           (args, env) -> {
-            new Skill(new FireballSkill(SkillTools::cursorPositionAsPoint), 500)
+            new FireballSkill(SkillTools::cursorPositionAsPoint, 1, 15f, Integer.MAX_VALUE, 1, true)
                 .execute(Game.hero().orElseThrow());
-
             return new BoolVal(true);
           },
           "move",
